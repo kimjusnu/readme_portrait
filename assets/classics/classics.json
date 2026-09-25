@@ -1,0 +1,8 @@
+[
+  {"slug": "mona_lisa", "title": "Mona Lisa", "author": "Leonardo da Vinci", "year": "c. 1503", "handle": "leonardo", "options": {"zoom": 2.0, "cropTop": 0.04, "cropX": 0.48, "contrast": "local"}},
+  {"slug": "pearl_earring", "title": "Girl with a Pearl Earring", "author": "Johannes Vermeer", "year": "1665", "handle": "vermeer", "options": {"zoom": 1.25, "cropTop": 0.08, "cropX": 0.52, "contrast": "global"}},
+  {"slug": "van_gogh", "title": "Self-Portrait", "author": "Vincent van Gogh", "year": "1887", "handle": "vincent", "options": {"zoom": 1.15, "cropTop": 0.03, "cropX": 0.5, "contrast": "local"}},
+  {"slug": "lincoln", "title": "Abraham Lincoln", "author": "Alexander Gardner", "year": "1863", "handle": "abe", "options": {"zoom": 1.5, "cropTop": 0.02, "cropX": 0.52, "saturation": 0, "contrast": "global"}},
+  {"slug": "einstein", "title": "Albert Einstein", "author": "Ferdinand Schmutzer", "year": "1921", "handle": "albert", "options": {"zoom": 2.25, "cropTop": 0.05, "cropX": 0.6, "saturation": 0, "contrast": "local"}},
+  {"slug": "great_wave", "title": "The Great Wave off Kanagawa", "author": "Katsushika Hokusai", "year": "c. 1831", "handle": "hokusai", "options": {"card": "wide", "cols": 150, "zoom": 1, "cropTop": 0, "cropX": 0.5, "contrast": "local"}}
+]
