@@ -215,19 +215,36 @@ def visibility(browser) -> None:
 
 
 def github_readme(browser) -> None:
-    """실제 github.com 저장소 README에서 SVG가 불러와지고 전 줄이 보이는지 2배 배율로 잰다."""
+    """실제 github.com README에서 SVG가 불러와지고, 같은 크기로 로컬에서 그린 것과 같은 줄이 보이는지 잰다.
+
+    밝기 문턱값만으로는 작품마다 어두운 가장자리 줄이 걸리므로(모나리자 53번 줄),
+    GitHub 렌더와 로컬 렌더의 「보이는 줄」 집합이 같은지를 기준으로 삼는다.
+    """
     page = browser.new_page(viewport={"width": 1280, "height": 1000}, device_scale_factor=2, locale="en-US")
     page.goto("https://github.com/kimjusnu/readme_portrait", wait_until="networkidle")
     img = page.locator("article img[src*='mona_lisa.svg']").first
     img.scroll_into_view_if_needed()
     natural = img.evaluate("e => [e.complete, e.naturalWidth, e.naturalHeight]")
+    width = img.evaluate("e => e.clientWidth")
     page.wait_for_timeout(6000)
-    png = OUT / "github-readme-2x.png"
-    img.screenshot(path=str(png))
+    gh_png = OUT / "github-readme-2x.png"
+    img.screenshot(path=str(gh_png))
     page.close()
-    ok_rows, bad = rows_visible(png, 62, Image.open(png).width / 560)
-    check("2 GitHub README renders the SVG", natural == [True, 560, 635] and not bad,
-          f"loaded={natural}, {ok_rows}/62 rows visible")
+
+    local = browser.new_page(viewport={"width": width + 40, "height": 1000}, device_scale_factor=2)
+    # file:// 이미지는 about:blank에서 막히므로 비교용 페이지를 파일로 둔다
+    html = OUT / "github-local.html"
+    html.write_text(f'<body style="margin:0"><img id="i" src="{(ROOT / "assets" / "gallery" / "mona_lisa.svg").as_uri()}" width="{width}">', encoding="utf-8")
+    local.goto(html.as_uri())
+    local.wait_for_timeout(6000)
+    local_png = OUT / "github-readme-local.png"
+    local.locator("#i").screenshot(path=str(local_png))
+    local.close()
+
+    gh_rows, gh_bad = rows_visible(gh_png, 62, Image.open(gh_png).width / 560)
+    _, local_bad = rows_visible(local_png, 62, Image.open(local_png).width / 560)
+    check("2 GitHub README renders the SVG like a browser does", natural == [True, 560, 635] and gh_bad == local_bad,
+          f"loaded={natural}, {width}px wide, {gh_rows}/62 rows lit on GitHub, same rows as local: {gh_bad == local_bad}")
 
 
 def main() -> None:
