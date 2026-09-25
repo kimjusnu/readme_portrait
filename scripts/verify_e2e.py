@@ -1,8 +1,10 @@
 """브라우저에서 사이트를 실제로 조작해 완료 기준(HANDOFF 5절)을 잰다.
 
 사용: python scripts/verify_e2e.py   → 결과는 표준 출력, 캡처·SVG는 .verify/
+     BASE_URL=https://kimjusnu.github.io/readme_portrait/ python scripts/verify_e2e.py   → 배포본 검사
 """
 import http.server
+import os
 import re
 import socketserver
 import threading
@@ -15,7 +17,8 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / ".verify"
 PORT = 8765
-BASE = f"http://127.0.0.1:{PORT}/"
+LOCAL = f"http://127.0.0.1:{PORT}/"
+BASE = os.environ.get("BASE_URL", LOCAL)
 SAMPLE = ROOT / "reference" / "sample-avatar.png"
 REFERENCE = (ROOT / "reference" / "portrait.sample.svg").read_text(encoding="utf-8")
 results: list[tuple[str, bool, str]] = []
@@ -72,7 +75,7 @@ def rows_visible(png: Path, n_rows: int, scale: float) -> tuple[int, list[int]]:
 
 def svg_shot(browser, svg_path: Path, png: Path, wait_ms: int) -> None:
     page = browser.new_page(viewport={"width": 560, "height": 635}, device_scale_factor=2)
-    page.goto(BASE + svg_path.relative_to(ROOT).as_posix())
+    page.goto(svg_path.as_uri())
     page.wait_for_timeout(wait_ms)
     page.screenshot(path=str(png))
     page.close()
@@ -109,7 +112,7 @@ def desktop(browser) -> None:
     check("3a static file has no <animate>", "<animate" not in static, f"{static.count('<animate')} animate tags")
 
     external = [(m, u) for m, u in requests if not u.startswith(BASE) and not u.startswith("blob:")]
-    check("6a file upload: no request leaves localhost", not external, f"{len(requests)} requests, external={external}")
+    check("6a file upload: no request leaves the site", not external, f"{len(requests)} requests, external={external}")
     ctx.close()
 
 
@@ -162,9 +165,25 @@ def visibility(browser) -> None:
         check(f"3 all rows visible: {name}", not bad, f"{ok_rows}/62 rows span full width, missing={bad[:10]}")
 
 
+def github_readme(browser) -> None:
+    """실제 github.com 저장소 README에서 SVG가 불러와지고 전 줄이 보이는지 2배 배율로 잰다."""
+    page = browser.new_page(viewport={"width": 1280, "height": 1000}, device_scale_factor=2, locale="en-US")
+    page.goto("https://github.com/kimjusnu/readme_portrait", wait_until="networkidle")
+    img = page.locator("article img[alt^='Animated colour ASCII portrait']").first
+    img.scroll_into_view_if_needed()
+    natural = img.evaluate("e => [e.complete, e.naturalWidth, e.naturalHeight]")
+    page.wait_for_timeout(6000)
+    png = OUT / "github-readme-2x.png"
+    img.screenshot(path=str(png))
+    page.close()
+    ok_rows, bad = rows_visible(png, 62, Image.open(png).width / 560)
+    check("2 GitHub README renders the SVG", natural == [True, 560, 635] and not bad,
+          f"loaded={natural}, {ok_rows}/62 rows visible")
+
+
 def main() -> None:
     OUT.mkdir(exist_ok=True)
-    server = serve()
+    server = serve() if BASE == LOCAL else None
     try:
         with sync_playwright() as p:
             browser = p.chromium.launch()
@@ -172,9 +191,12 @@ def main() -> None:
             visibility(browser)
             mobile(browser)
             github_lookup(browser)
+            if os.environ.get("CHECK_GITHUB"):
+                github_readme(browser)
             browser.close()
     finally:
-        server.shutdown()
+        if server:
+            server.shutdown()
     failed = [n for n, ok, _ in results if not ok]
     print(f"\n{len(results) - len(failed)}/{len(results)} checks passed" + (f"; failed: {failed}" if failed else ""))
 
