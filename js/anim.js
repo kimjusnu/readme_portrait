@@ -6,7 +6,8 @@ import { esc, fx } from "./fmt.js";
 
 export const STYLES = ["type", "reveal", "scan", "matrix"];
 const GREEN = "#1fd466";
-const GLYPHS = "ｱｲｳｴｵｶｷｸｹｺ0123456789:.=*+-<>";
+// ASCII only: README images get system fonts, and CJK glyphs can turn into boxes
+const GLYPHS = "0123456789:.=*+-<>|/$#";
 
 const keyed = (begin, dur) => fx(begin / dur, 3);
 

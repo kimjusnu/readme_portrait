@@ -48,6 +48,13 @@ for (const style of STYLES) {
   });
 }
 
+test("rain glyphs stay within printable ASCII (system fonts only in README images)", () => {
+  const svg = renderSvg(cells, { ...DEFAULTS, anim: "matrix" });
+  const drops = [...svg.matchAll(/<tspan x="[\d.]+" dy="[\d.]+"(?: fill="[^"]+")?>([^<]*)<\/tspan>/g)].map((m) => m[1]);
+  assert.ok(drops.length > 0);
+  for (const d of drops) assert.match(d.replace(/&(amp|lt|gt);/g, "x"), /^[\x20-\x7e]+$/);
+});
+
 test("every non-default style actually animates", () => {
   for (const style of STYLES.filter((s) => s !== "type")) {
     const svg = renderSvg(cells, { ...DEFAULTS, anim: style });
