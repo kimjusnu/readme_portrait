@@ -25,10 +25,10 @@ export function mountSource(canvas, store) {
     ctx.fillRect(0, y + h, cw, ch - y - h);
     ctx.fillRect(0, y, x, h);
     ctx.fillRect(x + w, y, cw - x - w, h);
-    ctx.strokeStyle = "#ff6ed6";
+    ctx.strokeStyle = "#1fd466";
     ctx.lineWidth = 2;
     ctx.strokeRect(x + 1, y + 1, w - 2, h - 2);
-    ctx.fillStyle = "#ff6ed6";
+    ctx.fillStyle = "#1fd466";
     for (const [hx, hy] of [[x, y], [x + w, y], [x, y + h], [x + w, y + h]]) ctx.fillRect(hx - 4, hy - 4, 8, 8);
   }
 

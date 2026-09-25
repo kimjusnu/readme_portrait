@@ -6,7 +6,7 @@
   <title>ASCII Portrait for GitHub Profile README — readme_portrait</title>
   <meta name="description" content="Turn a photo or your GitHub avatar into an animated, colour ASCII-art portrait SVG that types itself out in a terminal window. Free, runs in your browser, copy-paste into your GitHub profile README.">
   <link rel="canonical" href="https://kimjusnu.github.io/readme_portrait/">
-  <meta name="theme-color" content="#d6ecfb">
+  <meta name="theme-color" content="#141414">
   <meta property="og:type" content="website">
   <meta property="og:title" content="readme_portrait — animated ASCII portrait for your GitHub README">
   <meta property="og:description" content="Photo or GitHub username in, typing terminal SVG out. Runs 100% in your browser.">
@@ -16,7 +16,7 @@
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preload" href="assets/fonts/inter-tight.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="assets/fonts/vt323.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="assets/clouds.png" as="image">
+  <link rel="preload" href="assets/hero-wave.svg" as="image">
   <link rel="stylesheet" href="assets/fonts/fonts.css">
   <link rel="stylesheet" href="style.css">
   <script type="application/ld+json">
@@ -52,23 +52,24 @@
 <body>
   <a class="skip" href="#studio" data-i18n="skip">Skip to the studio</a>
 
+  <nav class="menubar" aria-label="Main">
+    <a class="menu-brand" href="./">@ readme_portrait</a>
+    <div class="menu-items">
+      <a href="#gallery" data-i18n="navGallery">Gallery</a>
+      <a href="#studio" data-i18n="navStudio">Studio</a>
+      <a href="#how" data-i18n="navHow">How it works</a>
+    </div>
+    <div class="menu-right">
+      <button type="button" id="lang" aria-label="한국어로 보기">한국어</button>
+      <a class="menu-star" href="https://github.com/kimjusnu/readme_portrait" data-i18n="star">★ Star</a>
+    </div>
+  </nav>
+
   <header class="hero">
-    <nav class="nav" aria-label="Main">
-      <div class="nav-group"><a class="tag" href="./">readme_portrait</a></div>
-      <div class="nav-group nav-center">
-        <a class="tag" href="#gallery" data-i18n="navGallery">Gallery</a>
-        <a class="tag" href="#studio" data-i18n="navStudio">Studio</a>
-        <a class="tag" href="#how" data-i18n="navHow">How it works</a>
-      </div>
-      <div class="nav-group">
-        <button type="button" class="tag" id="lang" aria-label="한국어로 보기">한국어</button>
-        <a class="tag dark" href="https://github.com/kimjusnu/readme_portrait" data-i18n="star">★ Star</a>
-      </div>
-    </nav>
 
     <div class="wrap hero-stack">
       <section class="win start" aria-labelledby="start-title">
-        <div class="win-bar"><span>Sept 25, 2026 ▪ readme_portrait</span><span class="meta">v1.1</span></div>
+        <div class="win-bar"><span>new_portrait.sh</span><span class="meta">v1.1</span></div>
         <div class="win-body">
           <h1 id="start-title" data-i18n="startTitle">MAKE YOUR PORTRAIT</h1>
           <p data-i18n="startLead">Type a GitHub username, or drop any image on this page.</p>
@@ -92,15 +93,16 @@
     </div>
 
     <div class="wrap">
-      <p class="leader"><span data-i18n="leaderA">Introducing readme_portrait</span><i aria-hidden="true"></i><span data-i18n="leaderB">ASCII beyond avatars</span></p>
-      <p class="headline" data-i18n="headline">Your Face, Typed Into Your README.</p>
+      <p class="prompt-line"><span class="ps">~ $</span> readme_portrait --in you.png --out assets/portrait.svg<span class="cursor" aria-hidden="true"></span></p>
+      <p class="headline" data-i18n="headline">Your Face, <span class="typed">Typed</span> Into Your README.</p>
     </div>
   </header>
 
   <main>
-    <section class="band rose" id="gallery" aria-labelledby="gallery-title">
+    <section class="band term" id="gallery" aria-labelledby="gallery-title">
       <div class="wrap">
-        <div class="marks">
+        <div class="section-head">
+          <span class="kicker">~/gallery $ ls *.svg</span>
           <h2 class="section-title" id="gallery-title" data-i18n="galleryTitle">Six Classics. 6,820 Characters Each.</h2>
           <p class="section-lead" data-i18n="galleryLead">Every card below is a real output of this page, rendered from public-domain works. Each one is a single SVG file that plays inside a GitHub README.</p>
         </div>
@@ -117,7 +119,8 @@
 
     <section class="band" id="studio" aria-labelledby="studio-title">
       <div class="wrap">
-        <div class="marks">
+        <div class="section-head">
+          <span class="kicker">~/studio $ ./portrait.sh --live</span>
           <h2 class="section-title" id="studio-title" data-i18n="studioTitle">The Studio.</h2>
           <p class="section-lead" data-i18n="studioLead">Drag the frame on the source image, pick a contrast mode and watch every stage of the pipeline update.</p>
         </div>
@@ -238,9 +241,12 @@
       </div>
     </section>
 
-    <section class="band sage" id="how" aria-labelledby="how-title">
+    <section class="band phosphor" id="how" aria-labelledby="how-title">
       <div class="wrap">
-        <div class="marks"><h2 class="section-title" id="how-title" data-i18n="howTitle">Built Like Software, Not A Filter.</h2></div>
+        <div class="section-head">
+          <span class="kicker">~/src $ npm test</span>
+          <h2 class="section-title" id="how-title" data-i18n="howTitle">Built Like Software, Not A Filter.</h2>
+        </div>
         <div class="facts">
           <div class="fact"><span class="label chip" data-i18n="f1l">Pillow parity</span><p data-i18n="f1">The JavaScript port reproduces the reference Python/Pillow script cell for cell: 6,820 of 6,820 characters and colours, and a byte-identical SVG. Local contrast matches OpenCV's CLAHE on 99.98% of pixels.</p></div>
           <div class="fact"><span class="label chip" data-i18n="f2l">Works inside &lt;img&gt;</span><p data-i18n="f2">GitHub strips inline SVG and blocks scripts and fonts in README images. The typing is pure SMIL, and every line is pinned with textLength so macOS, Windows and Linux line up.</p></div>
@@ -255,9 +261,12 @@
       </div>
     </section>
 
-    <section class="band dark" id="faq" aria-labelledby="faq-title">
+    <section class="band amber" id="faq" aria-labelledby="faq-title">
       <div class="wrap">
-        <div class="marks"><h2 class="section-title" id="faq-title" data-i18n="faqTitle">We Give A FAQ.</h2></div>
+        <div class="section-head">
+          <span class="kicker">~ $ man readme_portrait</span>
+          <h2 class="section-title" id="faq-title" data-i18n="faqTitle">Questions, Answered.</h2>
+        </div>
         <div class="faq">
           <details open><summary data-i18n="q1">Why not paste the &lt;svg&gt; straight into the README?</summary><p data-i18n="a1">GitHub strips inline SVG from Markdown. It has to be a file loaded with &lt;img&gt;, where scripts and web fonts are blocked and only SMIL animation runs.</p></details>
           <details><summary data-i18n="q2">Is my photo uploaded?</summary><p data-i18n="a2">No. Pixels are read and converted in your browser. The only network call is the GitHub API lookup when you type a username.</p></details>
@@ -271,7 +280,7 @@
 
   <footer class="footer">
     <div class="wrap">
-      <p class="wordmark">readme_portrait</p>
+      <p class="wordmark">readme_portrait<span class="cursor" aria-hidden="true"></span></p>
       <div class="foot-row">
         <span data-i18n="foot">MIT licensed · no tracking · no uploads</span>
         <span><a href="https://github.com/kimjusnu/readme_portrait">GitHub</a> · <a href="https://github.com/kimjusnu/readme_portrait/blob/main/CREDITS.md">Credits</a> · <a href="https://github.com/kimjusnu">@kimjusnu</a></span>
@@ -279,7 +288,7 @@
     </div>
   </footer>
 
-  <div class="drop-veil" id="veil" aria-hidden="true"><div class="win"><div class="win-bar"><span>drop.app</span></div><div class="win-body pixel veil-text" data-i18n="dropHere">Drop the image to convert it</div></div></div>
+  <div class="drop-veil" id="veil" aria-hidden="true"><div class="win"><div class="win-bar"><span>drop_here</span></div><div class="win-body pixel veil-text" data-i18n="dropHere">Drop the image to convert it</div></div></div>
 
   <script type="module" src="js/ui.js"></script>
 </body>
