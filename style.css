@@ -120,7 +120,17 @@ input[type="checkbox"] { accent-color: var(--ink); width: 18px; height: 18px; ma
 .start .hint { font-size: 17px; opacity: 0.75; }
 .start input { text-align: left; }
 #gh-go { margin-top: 8px; }
-.start .drop-link { font: inherit; background: none; border: 0; padding: 0; text-decoration: underline; cursor: pointer; color: inherit; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--ink); }
+.tabs [role="tab"] { font: 20px/1 var(--pixel); padding: 8px; background: var(--panel-hi); color: var(--ink); border: 0; cursor: pointer; }
+.tabs [role="tab"] + [role="tab"] { border-left: 1px solid var(--ink); }
+.tabs [aria-selected="true"] { background: var(--ink); color: var(--phosphor); }
+.dropzone {
+  display: grid; gap: 6px; place-items: center; min-height: 104px; padding: 16px; cursor: pointer;
+  border: 2px dashed var(--ink); background: var(--panel-hi); text-align: center;
+}
+.dropzone:hover, .dropzone:focus-within { background: var(--phosphor); }
+.dropzone-title { font: 22px/1.1 var(--pixel); }
+.dropzone-hint { font: 17px/1.1 var(--pixel); color: var(--muted); }
 .classics-pick { width: min(100%, 440px); }
 .picks { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
 .pick { display: grid; gap: 4px; padding: 0; background: none; border: 0; cursor: pointer; text-align: center; font: 16px/1 var(--pixel); color: var(--ink); }

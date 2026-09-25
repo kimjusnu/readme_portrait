@@ -132,7 +132,45 @@ function bindDrop() {
   });
 }
 
+// Two input modes as ARIA tabs: click or arrow keys switch panels
+function bindTabs() {
+  const tabs = [$("tab-id"), $("tab-image")];
+  const select = (tab) => {
+    for (const t of tabs) {
+      const on = t === tab;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+      $(t.getAttribute("aria-controls")).hidden = !on;
+    }
+    tab.focus();
+  };
+  tabs.forEach((tab, i) => {
+    tab.addEventListener("click", () => select(tab));
+    tab.addEventListener("keydown", (e) => {
+      const n = tabs.length;
+      const next = { ArrowRight: (i + 1) % n, ArrowLeft: (i - 1 + n) % n, Home: 0, End: n - 1 }[e.key];
+      if (next === undefined) return;
+      e.preventDefault();
+      select(tabs[next]);
+    });
+  });
+}
+
+// Ctrl+V anywhere: an image on the clipboard goes straight to the studio (typing into inputs is left alone)
+function bindPaste() {
+  document.addEventListener("paste", (e) => {
+    const item = [...(e.clipboardData?.items || [])].find((it) => it.kind === "file" && it.type.startsWith("image/"));
+    if (!item) return;
+    e.preventDefault();
+    const file = item.getAsFile();
+    loadFile(new File([file], "pasted image", { type: file.type }));
+    $("studio").scrollIntoView();
+  });
+}
+
 function bindEvents() {
+  bindTabs();
+  bindPaste();
   $("gh-form").addEventListener("submit", (e) => {
     e.preventDefault();
     const id = $("gh-id").value.trim();
