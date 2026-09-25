@@ -31,7 +31,8 @@ export async function pixelsFromBlob(blob) {
   ctx.imageSmoothingQuality = "high";
   ctx.drawImage(bitmap, 0, 0, w, h);
   bitmap.close();
-  return { rgb: rgbaToRgb(ctx.getImageData(0, 0, w, h).data), w, h };
+  // the canvas doubles as the Source window's backdrop
+  return { rgb: rgbaToRgb(ctx.getImageData(0, 0, w, h).data), w, h, canvas };
 }
 
 export async function avatarBlob(id) {

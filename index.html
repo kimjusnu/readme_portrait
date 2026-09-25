@@ -6,7 +6,7 @@
   <title>ASCII Portrait for GitHub Profile README — readme_portrait</title>
   <meta name="description" content="Turn a photo or your GitHub avatar into an animated, colour ASCII-art portrait SVG that types itself out in a terminal window. Free, runs in your browser, copy-paste into your GitHub profile README.">
   <link rel="canonical" href="https://kimjusnu.github.io/readme_portrait/">
-  <meta name="theme-color" content="#0d1117">
+  <meta name="theme-color" content="#d6ecfb">
   <meta property="og:type" content="website">
   <meta property="og:title" content="readme_portrait — animated ASCII portrait for your GitHub README">
   <meta property="og:description" content="Photo or GitHub username in, typing terminal SVG out. Runs 100% in your browser.">
@@ -14,6 +14,10 @@
   <meta property="og:image" content="https://kimjusnu.github.io/readme_portrait/assets/og.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/inter-tight.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/vt323.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/clouds.png" as="image">
+  <link rel="stylesheet" href="assets/fonts/fonts.css">
   <link rel="stylesheet" href="style.css">
   <script type="application/ld+json">
   {
@@ -33,21 +37,12 @@
       {
         "@type": "FAQPage",
         "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "How do I add an ASCII art portrait to my GitHub profile README?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Generate portrait.svg here, upload it to the assets/ folder of your profile repository (username/username), then add <img src=\"assets/portrait.svg\" width=\"49%\"> to README.md and commit." }
-          },
-          {
-            "@type": "Question",
-            "name": "Why not paste the <svg> code straight into the README?",
-            "acceptedAnswer": { "@type": "Answer", "text": "GitHub strips inline <svg> from Markdown. The SVG must be a file loaded with <img>, where only SMIL animation runs, so the typing effect is built with SMIL." }
-          },
-          {
-            "@type": "Question",
-            "name": "Is my photo uploaded anywhere?",
-            "acceptedAnswer": { "@type": "Answer", "text": "No. The conversion runs entirely in your browser canvas. Only a GitHub username lookup calls the GitHub API to fetch the public avatar." }
-          }
+          { "@type": "Question", "name": "How do I add an ASCII art portrait to my GitHub profile README?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Generate portrait.svg here, upload it to the assets/ folder of your profile repository (username/username), then add <img src=\"assets/portrait.svg\" width=\"49%\"> to README.md and commit." } },
+          { "@type": "Question", "name": "Why not paste the <svg> code straight into the README?",
+            "acceptedAnswer": { "@type": "Answer", "text": "GitHub strips inline <svg> from Markdown. The SVG must be a file loaded with <img>, where only SMIL animation runs, so the typing effect is built with SMIL." } },
+          { "@type": "Question", "name": "Is my photo uploaded anywhere?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. The conversion runs entirely in your browser canvas. Only a GitHub username lookup calls the GitHub API to fetch the public avatar." } }
         ]
       }
     ]
@@ -55,146 +50,236 @@
   </script>
 </head>
 <body>
-  <a class="skip" href="#main" data-i18n="skip">Skip to converter</a>
-  <header class="top container">
-    <div class="brand">
-      <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-      <span class="mono">readme_portrait</span>
-    </div>
-    <nav class="top-actions">
-      <button type="button" class="btn ghost" id="lang" aria-label="한국어로 보기">한국어</button>
-      <a class="btn ghost" href="https://github.com/kimjusnu/readme_portrait" data-i18n="star">★ Star on GitHub</a>
+  <a class="skip" href="#studio" data-i18n="skip">Skip to the studio</a>
+
+  <header class="hero">
+    <nav class="nav" aria-label="Main">
+      <div class="nav-group"><a class="tag" href="./">readme_portrait</a></div>
+      <div class="nav-group nav-center">
+        <a class="tag" href="#gallery" data-i18n="navGallery">Gallery</a>
+        <a class="tag" href="#studio" data-i18n="navStudio">Studio</a>
+        <a class="tag" href="#how" data-i18n="navHow">How it works</a>
+      </div>
+      <div class="nav-group">
+        <button type="button" class="tag" id="lang" aria-label="한국어로 보기">한국어</button>
+        <a class="tag dark" href="https://github.com/kimjusnu/readme_portrait" data-i18n="star">★ Star</a>
+      </div>
     </nav>
+
+    <div class="wrap hero-stack">
+      <section class="win start" aria-labelledby="start-title">
+        <div class="win-bar"><span>Sept 25, 2026 ▪ readme_portrait</span><span class="meta">v1.1</span></div>
+        <div class="win-body">
+          <h1 id="start-title" data-i18n="startTitle">MAKE YOUR PORTRAIT</h1>
+          <p data-i18n="startLead">Type a GitHub username, or drop any image on this page.</p>
+          <form id="gh-form" novalidate>
+            <label for="gh-id" class="visually-hidden" data-i18n="ghLabel">GitHub username</label>
+            <input id="gh-id" name="gh" autocomplete="off" spellcheck="false" placeholder="your-github-id" maxlength="39" required>
+            <button type="submit" class="btn solid block" id="gh-go" data-i18n="ghGo">Generate</button>
+          </form>
+          <p class="hint">
+            <span data-i18n="orFile">or</span>
+            <label class="drop-link"><input type="file" id="file" accept="image/png,image/jpeg,image/webp" class="visually-hidden"><span data-i18n="chooseFile">choose an image</span></label>
+            <span data-i18n="stays">· never leaves your device</span>
+          </p>
+        </div>
+      </section>
+
+      <section class="win classics-pick" aria-labelledby="pick-title">
+        <div class="win-bar"><h2 id="pick-title" data-i18n="pickTitle">Or start from a classic</h2><span class="meta">public domain</span></div>
+        <div class="win-body"><div class="picks" id="picks"><button type="button" class="pick" data-classic="mona_lisa" aria-pressed="false" title="Mona Lisa · Leonardo da Vinci, c. 1503"><img src="assets/classics/mona_lisa_thumb.jpg" alt="" width="80" height="80"><span>leonardo</span></button><button type="button" class="pick" data-classic="pearl_earring" aria-pressed="false" title="Girl with a Pearl Earring · Johannes Vermeer, 1665"><img src="assets/classics/pearl_earring_thumb.jpg" alt="" width="80" height="80"><span>vermeer</span></button><button type="button" class="pick" data-classic="van_gogh" aria-pressed="false" title="Self-Portrait · Vincent van Gogh, 1887"><img src="assets/classics/van_gogh_thumb.jpg" alt="" width="80" height="80"><span>vincent</span></button><button type="button" class="pick" data-classic="lincoln" aria-pressed="false" title="Abraham Lincoln · Alexander Gardner, 1863"><img src="assets/classics/lincoln_thumb.jpg" alt="" width="80" height="80"><span>abe</span></button><button type="button" class="pick" data-classic="einstein" aria-pressed="false" title="Albert Einstein · Ferdinand Schmutzer, 1921"><img src="assets/classics/einstein_thumb.jpg" alt="" width="80" height="80"><span>albert</span></button><button type="button" class="pick" data-classic="great_wave" aria-pressed="false" title="The Great Wave off Kanagawa · Katsushika Hokusai, c. 1831"><img src="assets/classics/great_wave_thumb.jpg" alt="" width="80" height="80"><span>hokusai</span></button></div></div>
+      </section>
+    </div>
+
+    <div class="wrap">
+      <p class="leader"><span data-i18n="leaderA">Introducing readme_portrait</span><i aria-hidden="true"></i><span data-i18n="leaderB">ASCII beyond avatars</span></p>
+      <p class="headline" data-i18n="headline">Your Face, Typed Into Your README.</p>
+    </div>
   </header>
 
-  <main id="main" class="container">
-    <section class="hero">
-      <h1 data-i18n="h1">An ASCII portrait that types itself into your GitHub README</h1>
-      <p class="lead" data-i18n="lead">Drop a photo or type your GitHub username. You get one SVG file and one line of code to paste. Everything runs in your browser.</p>
+  <main>
+    <section class="band rose" id="gallery" aria-labelledby="gallery-title">
+      <div class="wrap">
+        <div class="marks">
+          <h2 class="section-title" id="gallery-title" data-i18n="galleryTitle">Six Classics. 6,820 Characters Each.</h2>
+          <p class="section-lead" data-i18n="galleryLead">Every card below is a real output of this page, rendered from public-domain works. Each one is a single SVG file that plays inside a GitHub README.</p>
+        </div>
+        <div class="gallery">
+          <figure class="win"><div class="win-bar"><span>mona_lisa.svg</span><span class="meta">local</span></div><div class="win-body"><img data-src="assets/gallery/mona_lisa.svg" alt="Mona Lisa as a colour ASCII portrait" width="560" height="635"><noscript><img src="assets/gallery/mona_lisa.svg" alt="Mona Lisa as a colour ASCII portrait" width="560" height="635"></noscript></div><figcaption class="gallery-foot"><cite>Mona Lisa · Leonardo da Vinci</cite><button type="button" class="btn small" data-classic="mona_lisa" data-i18n="open">Open</button></figcaption></figure>
+          <figure class="win"><div class="win-bar"><span>pearl_earring.svg</span><span class="meta">global</span></div><div class="win-body"><img data-src="assets/gallery/pearl_earring.svg" alt="Girl with a Pearl Earring as a colour ASCII portrait" width="560" height="635"><noscript><img src="assets/gallery/pearl_earring.svg" alt="Girl with a Pearl Earring as a colour ASCII portrait" width="560" height="635"></noscript></div><figcaption class="gallery-foot"><cite>Girl with a Pearl Earring · Vermeer</cite><button type="button" class="btn small" data-classic="pearl_earring" data-i18n="open">Open</button></figcaption></figure>
+          <figure class="win"><div class="win-bar"><span>van_gogh.svg</span><span class="meta">local</span></div><div class="win-body"><img data-src="assets/gallery/van_gogh.svg" alt="Van Gogh self-portrait as a colour ASCII portrait" width="560" height="635"><noscript><img src="assets/gallery/van_gogh.svg" alt="Van Gogh self-portrait as a colour ASCII portrait" width="560" height="635"></noscript></div><figcaption class="gallery-foot"><cite>Self-Portrait · Vincent van Gogh</cite><button type="button" class="btn small" data-classic="van_gogh" data-i18n="open">Open</button></figcaption></figure>
+          <figure class="win"><div class="win-bar"><span>lincoln.svg</span><span class="meta">global</span></div><div class="win-body"><img data-src="assets/gallery/lincoln.svg" alt="Abraham Lincoln as an ASCII portrait" width="560" height="635"><noscript><img src="assets/gallery/lincoln.svg" alt="Abraham Lincoln as an ASCII portrait" width="560" height="635"></noscript></div><figcaption class="gallery-foot"><cite>Abraham Lincoln · Alexander Gardner</cite><button type="button" class="btn small" data-classic="lincoln" data-i18n="open">Open</button></figcaption></figure>
+          <figure class="win"><div class="win-bar"><span>einstein.svg</span><span class="meta">local</span></div><div class="win-body"><img data-src="assets/gallery/einstein.svg" alt="Albert Einstein as an ASCII portrait" width="560" height="635"><noscript><img src="assets/gallery/einstein.svg" alt="Albert Einstein as an ASCII portrait" width="560" height="635"></noscript></div><figcaption class="gallery-foot"><cite>Albert Einstein · Ferdinand Schmutzer</cite><button type="button" class="btn small" data-classic="einstein" data-i18n="open">Open</button></figcaption></figure>
+          <figure class="win wide-card"><div class="win-bar"><span>great_wave.svg</span><span class="meta">880×500</span></div><div class="win-body"><img data-src="assets/gallery/great_wave.svg" alt="The Great Wave off Kanagawa as a colour ASCII card" width="880" height="500"><noscript><img src="assets/gallery/great_wave.svg" alt="The Great Wave off Kanagawa as a colour ASCII card" width="880" height="500"></noscript></div><figcaption class="gallery-foot"><cite>The Great Wave · Hokusai</cite><button type="button" class="btn small" data-classic="great_wave" data-i18n="open">Open</button></figcaption></figure>
+        </div>
+      </div>
     </section>
 
-    <div class="layout">
-      <section class="panel" aria-labelledby="in-title">
-        <h2 id="in-title" class="panel-title" data-i18n="input">1. Image</h2>
+    <section class="band" id="studio" aria-labelledby="studio-title">
+      <div class="wrap">
+        <div class="marks">
+          <h2 class="section-title" id="studio-title" data-i18n="studioTitle">The Studio.</h2>
+          <p class="section-lead" data-i18n="studioLead">Drag the frame on the source image, pick a contrast mode and watch every stage of the pipeline update.</p>
+        </div>
 
-        <form id="gh-form" class="row" novalidate>
-          <label class="field grow">
-            <span data-i18n="ghLabel">GitHub username</span>
-            <input id="gh-id" name="gh" autocomplete="off" spellcheck="false" placeholder="octocat" maxlength="39" required>
-          </label>
-          <button type="submit" class="btn primary" id="gh-go" data-i18n="ghGo">Use avatar</button>
-        </form>
-        <p class="hint muted"><span data-i18n="try">Try:</span> <a href="?u=kimjusnu">kimjusnu</a> · <a href="?u=octocat">octocat</a></p>
+        <div class="studio">
+          <div class="col">
+            <section class="win" aria-labelledby="src-title">
+              <div class="win-bar"><h3 id="src-title">Source 1.0</h3><span class="meta" id="src-name">—</span></div>
+              <div class="win-body source-body">
+                <canvas id="source" class="source-canvas" width="320" height="320" tabindex="0" role="img" aria-label="Source image with the crop frame. Drag or use arrow keys to move it, + and − to zoom."></canvas>
+                <p class="source-help" data-i18n="sourceHelp">Drag the frame · scroll or +/− to zoom · arrow keys move it.</p>
+              </div>
+            </section>
 
-        <p class="or" data-i18n="or">or</p>
-
-        <label class="drop" id="drop">
-          <input type="file" id="file" accept="image/png,image/jpeg,image/webp" class="visually-hidden">
-          <strong data-i18n="dropTitle">Drop an image here</strong>
-          <span data-i18n="dropHint">or press to choose · PNG, JPG, WebP · stays on your device</span>
-        </label>
-
-        <h2 class="panel-title" data-i18n="options">2. Options</h2>
-        <fieldset id="options" class="options" disabled>
-          <legend class="visually-hidden" data-i18n="options">2. Options</legend>
-          <label class="field">
-            <span><span data-i18n="cols">Columns</span> <output id="cols-out" class="mono">110</output></span>
-            <input type="range" id="cols" min="60" max="140" step="2" value="110">
-          </label>
-          <label class="field">
-            <span data-i18n="mode">Colour</span>
-            <select id="colorMode">
-              <option value="color" data-i18n="modeColor">Photo colours</option>
-              <option value="gray" data-i18n="modeGray">Grayscale</option>
-              <option value="green" data-i18n="modeGreen">Terminal green</option>
-              <option value="amber" data-i18n="modeAmber">Amber</option>
-            </select>
-          </label>
-          <label class="check"><input type="checkbox" id="equalize" checked> <span data-i18n="equalize">Boost contrast (histogram equalisation)</span></label>
-          <label class="field">
-            <span><span data-i18n="brightness">Brightness</span> <output id="brightness-out" class="mono">1.6</output></span>
-            <input type="range" id="brightness" min="0.6" max="2.6" step="0.1" value="1.6">
-          </label>
-          <label class="field">
-            <span><span data-i18n="saturation">Saturation</span> <output id="saturation-out" class="mono">1.3</output></span>
-            <input type="range" id="saturation" min="0" max="2.5" step="0.1" value="1.3">
-          </label>
-          <div class="field">
-            <span id="crop-label" data-i18n="crop">Crop position</span>
-            <div class="seg" role="group" aria-labelledby="crop-label">
-              <button type="button" class="btn small" data-crop="top" data-i18n="cropTop">Top</button>
-              <button type="button" class="btn small" data-crop="center" data-i18n="cropCenter">Middle</button>
-              <button type="button" class="btn small" data-crop="bottom" data-i18n="cropBottom">Bottom</button>
-            </div>
-            <input type="range" id="cropTop" min="0" max="0.12" step="0.01" value="0.02" aria-labelledby="crop-label">
+            <section class="win" aria-labelledby="opt-title">
+              <div class="win-bar"><h3 id="opt-title">Options 1.1</h3></div>
+              <fieldset id="options" class="win-body options-body" disabled>
+                <legend class="visually-hidden">Options</legend>
+                <div class="group">
+                  <span class="label" data-i18n="gCells">Cells</span>
+                  <label class="field"><span class="field-head"><span data-i18n="cols">Columns</span><output id="cols-out">110</output></span><input type="range" id="cols" min="60" max="160" step="2" value="110"></label>
+                  <div class="field">
+                    <span class="field-head" id="contrast-label"><span data-i18n="contrast">Contrast</span></span>
+                    <div class="seg" role="radiogroup" aria-labelledby="contrast-label">
+                      <label><input type="radio" name="contrast" value="global" checked><span data-i18n="cGlobal">Global</span></label>
+                      <label><input type="radio" name="contrast" value="local"><span data-i18n="cLocal">Local</span></label>
+                      <label><input type="radio" name="contrast" value="none"><span data-i18n="cNone">Off</span></label>
+                    </div>
+                  </div>
+                  <label class="field"><span class="field-head"><span data-i18n="zoom">Zoom</span><output id="zoom-out">1</output></span><input type="range" id="zoom" min="1" max="4" step="0.05" value="1"></label>
+                </div>
+                <div class="group">
+                  <span class="label" data-i18n="gColour">Colour</span>
+                  <label class="field"><span class="visually-hidden" data-i18n="mode">Colour mode</span>
+                    <select id="colorMode">
+                      <option value="color" data-i18n="modeColor">Photo colours</option>
+                      <option value="gray" data-i18n="modeGray">Grayscale</option>
+                      <option value="green" data-i18n="modeGreen">Terminal green</option>
+                      <option value="amber" data-i18n="modeAmber">Amber</option>
+                    </select>
+                  </label>
+                  <label class="field"><span class="field-head"><span data-i18n="brightness">Brightness</span><output id="brightness-out">1.6</output></span><input type="range" id="brightness" min="0.6" max="2.6" step="0.1" value="1.6"></label>
+                  <label class="field"><span class="field-head"><span data-i18n="saturation">Saturation</span><output id="saturation-out">1.3</output></span><input type="range" id="saturation" min="0" max="2.5" step="0.1" value="1.3"></label>
+                </div>
+                <div class="group">
+                  <span class="label" data-i18n="gTerminal">Terminal</span>
+                  <div class="row2">
+                    <label class="field"><span class="field-head" data-i18n="title">Window title</span><input id="title" maxlength="39" value="user"></label>
+                    <label class="field"><span class="field-head" data-i18n="name">whoami</span><input id="name" maxlength="39" value="user"></label>
+                  </div>
+                  <label class="check"><input type="checkbox" id="animate" checked> <span data-i18n="animate">Typing animation</span></label>
+                  <label class="field"><span class="field-head"><span data-i18n="speed">Seconds per line</span><output id="step-out">0.07</output></span><input type="range" id="step" min="0.02" max="0.2" step="0.01" value="0.07"></label>
+                  <label class="field"><span class="visually-hidden" data-i18n="card">Card size</span>
+                    <select id="card">
+                      <option value="card" data-i18n="cardSide">Card 560×635 · fits beside another card</option>
+                      <option value="wide" data-i18n="cardWide">Wide 880×500 · on its own</option>
+                    </select>
+                  </label>
+                </div>
+              </fieldset>
+            </section>
           </div>
-          <div class="row">
-            <label class="field grow"><span data-i18n="title">Window title name</span><input id="title" maxlength="39" value="user"></label>
-            <label class="field grow"><span data-i18n="name">whoami name</span><input id="name" maxlength="39" value="user"></label>
+
+          <div class="col col-main">
+            <section class="win" aria-labelledby="pv-title">
+              <div class="win-bar"><h3 id="pv-title">portrait.svg — Preview</h3><span class="meta" id="pv-meta">example</span></div>
+              <div class="win-body preview-body">
+                <img id="preview" alt="" width="560" height="635">
+              </div>
+              <div class="preview-tools">
+                <span class="stats" id="size">—</span>
+                <span class="tool-actions">
+                  <button type="button" class="btn small play" id="replay" data-i18n="replay">Replay</button>
+                  <a class="btn solid small" id="download" aria-disabled="true" download="portrait.svg" data-i18n="download">Download .svg</a>
+                </span>
+              </div>
+              <p class="status" id="status" role="status" aria-live="polite"></p>
+            </section>
+
+            <section class="win" aria-labelledby="pipe-title">
+              <div class="win-bar"><h3 id="pipe-title">Pipeline</h3><span class="meta" id="timing">—</span></div>
+              <div class="win-body">
+                <div class="stages">
+                  <figure class="stage"><canvas id="st-crop" width="104" height="111"></canvas><figcaption>1 crop<b id="st-crop-d">—</b></figcaption></figure>
+                  <figure class="stage"><canvas id="st-luma" width="104" height="111"></canvas><figcaption>2 luma<b>ITU-R 601</b></figcaption></figure>
+                  <figure class="stage"><canvas id="st-contrast" width="104" height="111"></canvas><figcaption>3 contrast<b id="st-contrast-d">equalize</b></figcaption></figure>
+                  <figure class="stage"><canvas id="st-cells" width="110" height="62"></canvas><figcaption>4 cells<b id="st-cells-d">110×62</b></figcaption></figure>
+                </div>
+              </div>
+            </section>
           </div>
-          <label class="check"><input type="checkbox" id="animate" checked> <span data-i18n="animate">Typing animation</span></label>
-          <label class="field">
-            <span><span data-i18n="speed">Seconds per line</span> <output id="step-out" class="mono">0.07</output></span>
-            <input type="range" id="step" min="0.02" max="0.2" step="0.01" value="0.07">
-          </label>
-          <label class="field">
-            <span data-i18n="card">Card size</span>
-            <select id="card">
-              <option value="card" data-i18n="cardSide">560×635 · fits beside another card</option>
-              <option value="wide" data-i18n="cardWide">880×500 · wide, on its own</option>
-            </select>
-          </label>
-        </fieldset>
-      </section>
 
-      <section class="panel result" aria-labelledby="out-title">
-        <h2 id="out-title" class="panel-title" data-i18n="output">3. Result</h2>
-        <figure class="preview">
-          <img id="preview" src="assets/example.svg" alt="Example: colour ASCII portrait in a terminal window" width="560" height="635">
-          <figcaption id="caption" class="muted" data-i18n="example">Example output. Try it with your own image.</figcaption>
-        </figure>
-        <p class="status" id="status" role="status" aria-live="polite"></p>
-
-        <div class="row actions">
-          <a class="btn primary" id="download" aria-disabled="true" download="portrait.svg" data-i18n="download">Download portrait.svg</a>
-          <span class="mono muted" id="size"></span>
+          <div class="col col-side">
+            <section class="win" aria-labelledby="rm-title">
+              <div class="win-bar"><h3 id="rm-title">README.md</h3></div>
+              <div class="win-body readme-body">
+                <div class="seg" role="radiogroup" aria-label="Image width">
+                  <label><input type="radio" name="width" value="49%" checked><span data-i18n="wHalf">49% · beside a card</span></label>
+                  <label><input type="radio" name="width" value="100%"><span data-i18n="wFull">100% · alone</span></label>
+                </div>
+                <pre><code id="code"></code></pre>
+                <button type="button" class="btn solid block" data-copy="code" data-i18n="copyCode">Copy README code</button>
+                <label class="check"><input type="checkbox" id="credit" checked> <span data-i18n="credit">Add a tiny "made with" link</span></label>
+                <ol class="steps">
+                  <li data-i18n="how1">Upload the file to <code>assets/portrait.svg</code> in <code>username/username</code>.</li>
+                  <li data-i18n="how2">Paste the code into <code>README.md</code>.</li>
+                  <li data-i18n="how3">Commit. It types itself out on your profile.</li>
+                </ol>
+                <details class="ai">
+                  <summary data-i18n="aiTitle">Hand it to an AI coding agent</summary>
+                  <pre><code id="ai-prompt"></code></pre>
+                  <button type="button" class="btn small" data-copy="ai-prompt" data-i18n="copy">Copy prompt</button>
+                </details>
+              </div>
+            </section>
+          </div>
         </div>
+      </div>
+    </section>
 
-        <div class="code-block">
-          <div class="code-head"><span data-i18n="codeHalf">README · beside another card (49%)</span><button type="button" class="btn small" data-copy="code-half" data-i18n="copy">Copy</button></div>
-          <pre><code id="code-half"></code></pre>
+    <section class="band sage" id="how" aria-labelledby="how-title">
+      <div class="wrap">
+        <div class="marks"><h2 class="section-title" id="how-title" data-i18n="howTitle">Built Like Software, Not A Filter.</h2></div>
+        <div class="facts">
+          <div class="fact"><span class="label chip" data-i18n="f1l">Pillow parity</span><p data-i18n="f1">The JavaScript port reproduces the reference Python/Pillow script cell for cell: 6,820 of 6,820 characters and colours, and a byte-identical SVG. Local contrast matches OpenCV's CLAHE on 99.98% of pixels.</p></div>
+          <div class="fact"><span class="label chip" data-i18n="f2l">Works inside &lt;img&gt;</span><p data-i18n="f2">GitHub strips inline SVG and blocks scripts and fonts in README images. The typing is pure SMIL, and every line is pinned with textLength so macOS, Windows and Linux line up.</p></div>
+          <div class="fact"><span class="label chip" data-i18n="f3l">Never blank</span><p data-i18n="f3">Rows are visible by default and the delay lives in keyTimes. Email previews, social cards and screenshots always show the full portrait.</p></div>
         </div>
-        <div class="code-block">
-          <div class="code-head"><span data-i18n="codeFull">README · on its own (100%)</span><button type="button" class="btn small" data-copy="code-full" data-i18n="copy">Copy</button></div>
-          <pre><code id="code-full"></code></pre>
+        <div class="numbers">
+          <div class="num"><strong>100%</strong><span data-i18n="n1">cell match with the reference</span></div>
+          <div class="num"><strong>~145 KB</strong><span data-i18n="n2">default file, 110×62 cells</span></div>
+          <div class="num"><strong>0</strong><span data-i18n="n3">image bytes sent anywhere</span></div>
+          <div class="num"><strong>MIT</strong><span data-i18n="n4">open source, no tracking</span></div>
         </div>
-        <label class="check"><input type="checkbox" id="credit" checked> <span data-i18n="credit">Add a tiny "made with readme_portrait" link</span></label>
+      </div>
+    </section>
 
-        <h3 class="sub" data-i18n="howTitle">Add it in 3 steps</h3>
-        <ol class="steps">
-          <li data-i18n="how1">Open your profile repository <code>username/username</code> and upload the file to <code>assets/portrait.svg</code>.</li>
-          <li data-i18n="how2">Paste the code above into <code>README.md</code>.</li>
-          <li data-i18n="how3">Commit. The typing animation plays on your profile page.</li>
-        </ol>
-
-        <div class="code-block">
-          <div class="code-head"><span data-i18n="aiTitle">Or hand it to an AI coding agent</span><button type="button" class="btn small" data-copy="ai-prompt" data-i18n="copy">Copy</button></div>
-          <pre><code id="ai-prompt"></code></pre>
+    <section class="band dark" id="faq" aria-labelledby="faq-title">
+      <div class="wrap">
+        <div class="marks"><h2 class="section-title" id="faq-title" data-i18n="faqTitle">We Give A FAQ.</h2></div>
+        <div class="faq">
+          <details open><summary data-i18n="q1">Why not paste the &lt;svg&gt; straight into the README?</summary><p data-i18n="a1">GitHub strips inline SVG from Markdown. It has to be a file loaded with &lt;img&gt;, where scripts and web fonts are blocked and only SMIL animation runs.</p></details>
+          <details><summary data-i18n="q2">Is my photo uploaded?</summary><p data-i18n="a2">No. Pixels are read and converted in your browser. The only network call is the GitHub API lookup when you type a username.</p></details>
+          <details><summary data-i18n="q4">Global or local contrast?</summary><p data-i18n="a4">Global equalisation gives bold silhouettes. Local (CLAHE) keeps detail inside faces when the background is bright or busy. Try both on your image; the pipeline window shows the difference.</p></details>
+          <details><summary data-i18n="q3">It looks blank in an email preview.</summary><p data-i18n="a3">It should not: every line is visible by default and the animation only hides lines briefly while it plays. Turn the animation off for a fully static file.</p></details>
+          <details><summary data-i18n="q5">Where do the example images come from?</summary><p data-i18n="a5">Public-domain works from Wikimedia Commons. Sources are listed in CREDITS.md.</p></details>
         </div>
-      </section>
-    </div>
-
-    <section class="faq" aria-labelledby="faq-title">
-      <h2 id="faq-title" data-i18n="faqTitle">Questions</h2>
-      <details><summary data-i18n="q1">Why not paste the &lt;svg&gt; straight into the README?</summary><p data-i18n="a1">GitHub strips inline SVG from Markdown. It has to be a file loaded with &lt;img&gt;, where scripts and web fonts are blocked and only SMIL animation runs. This tool builds the typing effect with SMIL and forces each line's width, so it looks the same on every OS.</p></details>
-      <details><summary data-i18n="q2">Is my photo uploaded?</summary><p data-i18n="a2">No. Pixels are read and converted in your browser. The only network call is the GitHub API lookup when you type a username.</p></details>
-      <details><summary data-i18n="q3">It looks blank in an email preview or screenshot.</summary><p data-i18n="a3">It should not: every line is visible by default and the animation only hides lines briefly while it plays. Turn the animation off for a fully static file.</p></details>
+      </div>
     </section>
   </main>
 
-  <footer class="container foot muted">
-    <span data-i18n="foot">MIT licensed · no tracking · made by</span> <a href="https://github.com/kimjusnu">@kimjusnu</a>
+  <footer class="footer">
+    <div class="wrap">
+      <p class="wordmark">readme_portrait</p>
+      <div class="foot-row">
+        <span data-i18n="foot">MIT licensed · no tracking · no uploads</span>
+        <span><a href="https://github.com/kimjusnu/readme_portrait">GitHub</a> · <a href="https://github.com/kimjusnu/readme_portrait/blob/main/CREDITS.md">Credits</a> · <a href="https://github.com/kimjusnu">@kimjusnu</a></span>
+      </div>
+    </div>
   </footer>
+
+  <div class="drop-veil" id="veil" aria-hidden="true"><div class="win"><div class="win-bar"><span>drop.app</span></div><div class="win-body pixel veil-text" data-i18n="dropHere">Drop the image to convert it</div></div></div>
 
   <script type="module" src="js/ui.js"></script>
 </body>
