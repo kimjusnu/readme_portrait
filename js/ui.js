@@ -9,12 +9,15 @@ import { drawPipeline } from "./pipeline.js";
 import { showPreview, replay } from "./preview.js";
 import { bindControls, writeControls, syncOutputs } from "./controls.js";
 import { loadCatalog, bindPicks, findClassic, classicBlob, markPick } from "./classics.js";
+import { encodeShare, decodeShare } from "./share.js";
 
 const $ = (id) => document.getElementById(id);
 const LIMIT_KB = 300;
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 
-const store = createStore({ pixels: null, source: "", username: "", opts: { ...DEFAULTS } });
+const store = createStore({ pixels: null, source: "", ref: null, username: "", opts: { ...DEFAULTS } });
+// Settings from a shared link also apply to images the visitor brings themselves
+const shared = decodeShare(location.search);
 const source = mountSource($("source"), store);
 let timer = 0;
 const catalogReady = loadCatalog().catch(() => []);
@@ -55,13 +58,13 @@ store.subscribe((state) => {
   timer = setTimeout(render, 120);
 });
 
-async function load(getBlob, { name, opts, username = "", classic = null, onlyIfEmpty = false }) {
+async function load(getBlob, { name, ref, opts, username = "", classic = null, onlyIfEmpty = false }) {
   setStatus(msg("loading"));
   $("gh-go").disabled = true;
   try {
     const pixels = await pixelsFromBlob(await getBlob());
     if (onlyIfEmpty && store.get().pixels) return; // the user picked something while the default loaded
-    store.set({ pixels, source: name, username, opts });
+    store.set({ pixels, source: name, ref, username, opts });
     writeControls(store.get().opts);
     $("options").disabled = false;
     $("src-name").textContent = name;
@@ -74,22 +77,42 @@ async function load(getBlob, { name, opts, username = "", classic = null, onlyIf
   }
 }
 
-async function loadClassic(slug, extra = {}) {
+async function loadClassic(slug, { opts: override = {}, ...extra } = {}) {
   await catalogReady; // buttons are live before the catalogue arrives
   const c = findClassic(slug);
   if (!c) return setStatus(msg("network"), "error");
-  const opts = { ...DEFAULTS, ...c.options, title: c.handle, name: c.handle };
-  return load(() => classicBlob(slug), { name: `${slug}.jpg`, opts, classic: slug, ...extra });
+  const opts = { ...DEFAULTS, ...c.options, title: c.handle, name: c.handle, ...override };
+  return load(() => classicBlob(slug), { name: `${slug}.jpg`, ref: { kind: "classic", id: slug }, opts, classic: slug, ...extra });
 }
 
-function loadUsername(id) {
-  return load(() => avatarBlob(id), { name: `${id}.png`, username: id, opts: { ...DEFAULTS, title: id, name: id } });
+function loadUsername(id, override = {}) {
+  const opts = { ...DEFAULTS, title: id, name: id, ...override };
+  return load(() => avatarBlob(id), { name: `${id}.png`, ref: { kind: "user", id }, username: id, opts });
 }
 
 // Your own image starts from the reference defaults; a classic's tuning belongs to that classic
 function loadFile(file) {
   const who = store.get().username || "user";
-  return load(() => file, { name: file.name || "image", username: store.get().username, opts: { ...DEFAULTS, title: who, name: who } });
+  const name = file.name || "image";
+  const opts = { ...DEFAULTS, title: who, name: who, ...shared.opts };
+  return load(() => file, { name, ref: { kind: "file", id: name }, username: store.get().username, opts });
+}
+
+async function copyText(text, done) {
+  try {
+    await navigator.clipboard.writeText(text);
+    setStatus(done);
+    return true;
+  } catch {
+    setStatus(msg("copyFailed"), "error");
+    return false;
+  }
+}
+
+function copyShareLink() {
+  const { opts, ref } = store.get();
+  const url = `${location.origin}${location.pathname}${encodeShare(opts, ref)}`;
+  return copyText(url, msg(ref?.kind === "file" ? "shareLocal" : "shareCopied"));
 }
 
 async function copy(id) {
@@ -192,6 +215,7 @@ function bindEvents() {
   for (const r of document.querySelectorAll('input[name="width"]')) r.addEventListener("change", updateSnippets);
   $("credit").addEventListener("change", updateSnippets);
   $("replay").addEventListener("click", replay);
+  $("share").addEventListener("click", copyShareLink);
   $("download").addEventListener("click", () => setStatus(msg("downloaded")));
   $("lang").addEventListener("click", () => {
     const next = currentLang() === "ko" ? "en" : "ko";
@@ -218,6 +242,10 @@ function whenNear(elements, onNear, margin) {
   elements.forEach((el) => io.observe(el));
 }
 
+function isKnownClassic(slug) {
+  return document.querySelector(`.pick[data-classic="${slug}"]`) !== null;
+}
+
 async function init() {
   applyLang(initialLang());
   bindEvents();
@@ -227,15 +255,20 @@ async function init() {
     $("studio").scrollIntoView();
   });
   whenNear([...document.querySelectorAll(".gallery img[data-src]")], (img) => { img.src = img.dataset.src; }, "0px 0px 120px 0px");
-  const preset = new URLSearchParams(location.search).get("u");
-  if (preset) {
-    $("gh-id").value = preset;
-    await loadUsername(preset);
+  const { source } = shared;
+  if (source?.kind === "user") {
+    $("gh-id").value = source.id;
+    await loadUsername(source.id, shared.opts);
+    $("studio").scrollIntoView();
+    return;
+  }
+  if (source?.kind === "classic" && isKnownClassic(source.id)) {
+    await loadClassic(source.id, { opts: shared.opts });
     $("studio").scrollIntoView();
     return;
   }
   // the studio starts alive instead of empty, but only once someone heads that way
-  whenNear([$("studio")], () => loadClassic("mona_lisa", { onlyIfEmpty: true }), "0px 0px 400px 0px");
+  whenNear([$("studio")], () => loadClassic("mona_lisa", { opts: shared.opts, onlyIfEmpty: true }), "0px 0px 400px 0px");
 }
 
 init();

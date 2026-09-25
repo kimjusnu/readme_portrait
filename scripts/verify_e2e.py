@@ -7,6 +7,7 @@ import http.server
 import os
 import re
 import socketserver
+from urllib.parse import urlsplit
 import threading
 from functools import partial
 from pathlib import Path
@@ -19,6 +20,7 @@ OUT = ROOT / ".verify"
 PORT = 8765
 LOCAL = f"http://127.0.0.1:{PORT}/"
 BASE = os.environ.get("BASE_URL", LOCAL)
+ORIGIN = "{0.scheme}://{0.netloc}".format(urlsplit(BASE))  # 클립보드 권한은 경로 없는 출처 단위
 SAMPLE = ROOT / "reference" / "sample-avatar.png"
 REFERENCE = (ROOT / "reference" / "portrait.sample.svg").read_text(encoding="utf-8")
 results: list[tuple[str, bool, str]] = []
@@ -142,7 +144,7 @@ def github_lookup(browser) -> None:
 
 def mobile(browser) -> None:
     ctx = browser.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2, accept_downloads=True, locale="en-US")
-    ctx.grant_permissions(["clipboard-read", "clipboard-write"], origin=BASE.rstrip("/"))
+    ctx.grant_permissions(["clipboard-read", "clipboard-write"], origin=ORIGIN)
     page = ctx.new_page()
     page.goto(BASE)
     page.set_input_files("#file", str(SAMPLE))
@@ -234,6 +236,35 @@ def image_input(browser) -> None:
     page.close()
 
 
+def share_link(browser) -> None:
+    """설정 공유 링크: 명화+설정이 새 창에서 복원되고, 로컬 이미지는 링크에 들어가지 않는다."""
+    ctx = browser.new_context(viewport={"width": 1280, "height": 900}, locale="en-US")
+    ctx.grant_permissions(["clipboard-read", "clipboard-write"], origin=ORIGIN)
+    page = ctx.new_page()
+    page.goto(BASE)
+    page.click(".pick[data-classic='einstein']")
+    wait_ready(page, "einstein.jpg")
+    page.fill("#cols", "80")
+    page.dispatch_event("#cols", "input")
+    page.click("label:has(input[name=contrast][value=none])")
+    page.wait_for_timeout(300)
+    page.click("#share")
+    url = page.evaluate("navigator.clipboard.readText()")
+    other = ctx.new_page()
+    other.goto(url)
+    wait_ready(other, "einstein.jpg")
+    restored = other.input_value("#cols") == "80" and other.is_checked("input[name=contrast][value=none]")
+    check("9a shared link restores the classic and settings", restored, url.split("/")[-1])
+
+    page.set_input_files("#file", str(SAMPLE))
+    wait_ready(page)
+    page.click("#share")
+    local_url = page.evaluate("navigator.clipboard.readText()")
+    check("9b local image is not put in the link", "u=" not in local_url and "c=" not in local_url and "sample" not in local_url,
+          local_url.split("/")[-1] or "(no query)")
+    ctx.close()
+
+
 def visibility(browser) -> None:
     for name, wait in (("portrait.static.svg", 300), ("portrait.svg", 5500)):
         png = OUT / f"{name}.png"
@@ -285,6 +316,7 @@ def main() -> None:
             visibility(browser)
             studio(browser)
             image_input(browser)
+            share_link(browser)
             mobile(browser)
             github_lookup(browser)
             if os.environ.get("CHECK_GITHUB"):
