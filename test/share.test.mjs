@@ -8,7 +8,7 @@ test("default options produce an empty query", () => {
 });
 
 test("changed options and the source survive a round trip", () => {
-  const opts = { ...DEFAULTS, cols: 90, contrast: "local", colorMode: "amber", zoom: 1.75, cropX: 0.42, cropTop: 0.1, animate: false, title: "octo", name: "octo" };
+  const opts = { ...DEFAULTS, anim: "matrix", cols: 90, contrast: "local", colorMode: "amber", zoom: 1.75, cropX: 0.42, cropTop: 0.1, animate: false, title: "octo", name: "octo" };
   const query = encodeShare(opts, { kind: "user", id: "octocat" });
   const back = decodeShare(query);
   assert.deepEqual(back.source, { kind: "user", id: "octocat" });

@@ -1,21 +1,12 @@
 // Character cells → terminal-window SVG. Port of svg()/row_spans() in reference/portrait.py.
 // Only SMIL animation is used: GitHub serves README images through <img>, which blocks scripts and fonts.
 import { layoutFor } from "./convert.js";
+import { esc, fx } from "./fmt.js";
+import { rowMarkup, overlay } from "./anim.js";
+
+export { esc };
 
 const FONT = "ui-monospace,SFMono-Regular,Menlo,Consolas,monospace";
-
-export function esc(s) {
-  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-}
-
-// Python-style fixed formatting: exact ties round to even, like f"{x:.2f}"
-function fx(x, digits) {
-  const scaled = x * 10 ** digits;
-  const floor = Math.floor(scaled);
-  const diff = scaled - floor;
-  const n = diff === 0.5 ? (floor % 2 === 0 ? floor : floor + 1) : Math.round(scaled);
-  return (n / 10 ** digits).toFixed(digits);
-}
 
 export function rowSpans(row) {
   const spans = [];
@@ -53,12 +44,7 @@ function row(i, cells, l, opts) {
   const text = `<text xml:space="preserve" x="${l.pad}" y="${fx(y + l.lineH * 0.8, 2)}" font-size="${fx(l.fontSize, 2)}" `
     + `textLength="${l.textW}" lengthAdjust="spacing">${rowSpans(cells)}</text>`;
   if (!opts.animate) return text;
-  const begin = i * opts.step;
-  const dur = begin + opts.step;
-  // Delay lives in keyTimes, and the rect's own width is full, so rows stay visible where SMIL never runs
-  return `<clipPath id="r${i}"><rect x="${l.pad}" y="${fx(y, 2)}" height="${fx(l.lineH + 0.5, 2)}" width="${l.textW}">`
-    + `<animate attributeName="width" values="0;0;${l.textW}" keyTimes="0;${fx(begin / dur, 3)};1" dur="${fx(dur, 3)}s" fill="freeze"/></rect></clipPath>`
-    + `<g clip-path="url(#r${i})">${text}</g>`;
+  return rowMarkup(opts.anim || "type", i, l, opts, y, text);
 }
 
 function footer(width, bodyH, pad, name, animate) {
@@ -81,6 +67,7 @@ export function renderSvg(cells, opts) {
   return [
     ...header(l.width, height, opts.title),
     ...cells.map((r, i) => row(i, r, l, opts)),
+    opts.animate ? overlay(opts.anim || "type", l, l.width, opts) : "",
     ...footer(l.width, bodyH, l.pad, opts.name, opts.animate),
     "</svg>",
   ].join("");

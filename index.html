@@ -179,7 +179,15 @@
                     <label class="field"><span class="field-head" data-i18n="title">Window title</span><input id="title" maxlength="39" value="user"></label>
                     <label class="field"><span class="field-head" data-i18n="name">whoami</span><input id="name" maxlength="39" value="user"></label>
                   </div>
-                  <label class="check"><input type="checkbox" id="animate" checked> <span data-i18n="animate">Typing animation</span></label>
+                  <label class="check"><input type="checkbox" id="animate" checked> <span data-i18n="animate">Animation</span></label>
+                  <label class="field"><span class="field-head" data-i18n="animStyle">Entrance style</span>
+                    <select id="anim">
+                      <option value="type" data-i18n="animType">Type line by line</option>
+                      <option value="reveal" data-i18n="animReveal">Reveal from the centre</option>
+                      <option value="scan" data-i18n="animScan">Scanline sweep</option>
+                      <option value="matrix" data-i18n="animMatrix">Matrix rain</option>
+                    </select>
+                  </label>
                   <label class="field"><span class="field-head"><span data-i18n="speed">Seconds per line</span><output id="step-out">0.07</output></span><input type="range" id="step" min="0.02" max="0.2" step="0.01" value="0.07"></label>
                   <label class="field"><span class="visually-hidden" data-i18n="card">Card size</span>
                     <select id="card">
