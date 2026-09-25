@@ -1,3 +1,5 @@
+import { clahe } from "./clahe.js";
+
 // Image pixels → character cells. Mirrors reference/portrait.py step by step,
 // reimplementing the Pillow operations it uses so the output matches closely.
 
@@ -12,10 +14,12 @@ export const DEFAULTS = Object.freeze({
   card: "card",
   cols: 110,
   colorMode: "color",
-  equalize: true,
+  contrast: "global", // "global" = histogram equalisation, "local" = CLAHE, "none"
   saturation: 1.3,
   brightness: 1.6,
   cropTop: 0.02, // crop starts this far down the image (fraction of height)
+  cropX: 0.5, // horizontal centre of the crop (fraction of width)
+  zoom: 1,
   title: "user",
   name: "user",
   animate: true,
@@ -91,12 +95,14 @@ function blend(a, b, alpha) {
   return Math.trunc(t);
 }
 
-export function cropBox(w, h, layout, cropTop) {
+// zoom shrinks the window around its centre; cropX (0–1) picks the horizontal centre
+export function cropBox(w, h, layout, cropTop, { zoom = 1, cropX = 0.5 } = {}) {
   const aspect = layout.textW / layout.textH;
   let ch = h * CROP_HEIGHT;
   if (ch * aspect > w) ch = w / aspect;
-  const cw = Math.min(w, ch * aspect);
-  const left = (w - cw) / 2;
+  ch /= Math.max(1, zoom);
+  const cw = ch * aspect;
+  const left = Math.min(Math.max(0, w * cropX - cw / 2), w - cw);
   const top = Math.min(Math.max(0, h * cropTop), h - ch);
   const x = Math.trunc(left);
   const y = Math.trunc(top);
@@ -192,17 +198,30 @@ function fillFor(mode, rgb, i, level) {
   return hex3(...base.map((v) => Math.round(v * k)));
 }
 
-export function toCells(rgb, w, h, opts) {
+function contrasted(luma, box, mode) {
+  if (mode === "local") return clahe(luma, box.w, box.h);
+  if (mode === "none") return luma;
+  return equalize(luma);
+}
+
+// Every intermediate stage, so the page can show the pipeline and not just the result
+export function analyze(rgb, w, h, opts) {
   const layout = layoutFor(opts);
-  const box = cropBox(w, h, layout, opts.cropTop);
+  const box = cropBox(w, h, layout, opts.cropTop, opts);
   const cropped = crop(rgb, w, box);
   const luma = toLuma(cropped);
-  const lum = resize(opts.equalize ? equalize(luma) : luma, box.w, box.h, 1, layout.cols, layout.rows);
+  const contrast = contrasted(luma, box, opts.contrast);
+  const lum = resize(contrast, box.w, box.h, 1, layout.cols, layout.rows);
   const color = resize(enhance(cropped, opts), box.w, box.h, 3, layout.cols, layout.rows);
   const last = RAMP.length - 1;
-  return Array.from({ length: layout.rows }, (_, y) => Array.from({ length: layout.cols }, (_, x) => {
+  const cells = Array.from({ length: layout.rows }, (_, y) => Array.from({ length: layout.cols }, (_, x) => {
     const p = y * layout.cols + x;
     const level = lum[p];
     return [RAMP[Math.floor((level * last) / 255)], fillFor(opts.colorMode, color, p * 3, level)];
   }));
+  return { layout, box, cropped, luma, contrast, lum, color, cells };
+}
+
+export function toCells(rgb, w, h, opts) {
+  return analyze(rgb, w, h, opts).cells;
 }

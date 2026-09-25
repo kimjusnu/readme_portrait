@@ -2,3 +2,4 @@
 *.rgb binary
 *.eq binary
 *.png binary
+*.clahe binary

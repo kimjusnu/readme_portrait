@@ -5,12 +5,15 @@
   → test/fixtures/sample.rgb   (reference/sample-avatar.png의 원시 RGB)
   → test/fixtures/sample.json  (reference/portrait.py가 낸 칸 글자·색)
   → test/fixtures/sample-crop.eq (샘플을 자른 영역의 평활화 결과)
+  → test/fixtures/sample-crop.clahe (같은 영역의 OpenCV CLAHE 결과)
 """
 import json
 import random
 import sys
 from pathlib import Path
 
+import cv2
+import numpy as np
 from PIL import Image, ImageEnhance, ImageOps
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -45,7 +48,11 @@ def main() -> None:
     img = Image.open(ROOT / "reference" / "sample-avatar.png").convert("RGB")
     (FIX / "sample.rgb").write_bytes(img.tobytes())
     # 명암이 치우친 실제 사진이라야 평활화 계산식의 작은 차이가 드러난다
-    (FIX / "sample-crop.eq").write_bytes(ImageOps.equalize(img.crop((40, 9, 419, 414)).convert("L")).tobytes())
+    crop_l = img.crop((40, 9, 419, 414)).convert("L")
+    (FIX / "sample-crop.eq").write_bytes(ImageOps.equalize(crop_l).tobytes())
+    # 국소 대비(CLAHE) 기준값: OpenCV와 같은 결과를 내는지 본다 (379×405는 8칸으로 나눠떨어지지 않아 가장자리 처리도 시험된다)
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    (FIX / "sample-crop.clahe").write_bytes(clahe.apply(np.asarray(crop_l)).tobytes())
     cells = portrait.to_cells(img)
     sample = {"w": img.width, "h": img.height, "chars": ["".join(c for c, _ in row) for row in cells],
               "fills": [[f for _, f in row] for row in cells]}
