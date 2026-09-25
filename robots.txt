@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kimjusnu.github.io/readme_portrait/sitemap.xml

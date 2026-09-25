@@ -1,0 +1,4 @@
+* text=auto eol=lf
+*.rgb binary
+*.eq binary
+*.png binary

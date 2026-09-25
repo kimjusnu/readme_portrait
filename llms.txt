@@ -1,0 +1,18 @@
+# readme_portrait
+
+> Free browser tool that turns a photo or a GitHub avatar into an animated colour ASCII-art portrait SVG for a GitHub profile README. The portrait types itself out line by line inside a terminal-window card. No upload, no account, no server.
+
+- Site: https://kimjusnu.github.io/readme_portrait/
+- Source (MIT): https://github.com/kimjusnu/readme_portrait
+- Deep link: https://kimjusnu.github.io/readme_portrait/?u=<github-username> loads that user's avatar
+
+## How it works
+- Crops the image to the text area, applies histogram equalisation, samples 110×62 cells, picks a character from the ramp `.:-=+*cs#%@` by brightness and colours it with the original pixel colour (saturation ×1.3, brightness ×1.6).
+- Output is a ~145 KB SVG (560×635) using SMIL animation only, because GitHub loads README images through <img>, which blocks scripts and web fonts and strips inline <svg>.
+- Each line uses textLength="520" so width is identical on every OS monospace font.
+- Rows are visible by default; the typing delay lives in keyTimes, so the image is never blank where animation does not run.
+
+## Add to a profile README
+1. Download portrait.svg and upload it to assets/portrait.svg in the repository named after your username (username/username).
+2. Add `<img src="assets/portrait.svg" alt="ASCII portrait" width="49%">` (or width="100%") to README.md.
+3. Commit.

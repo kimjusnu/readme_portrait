@@ -1,0 +1,86 @@
+<p align="center">
+  <img src="assets/portrait.svg" alt="Animated colour ASCII portrait typing itself out in a terminal window" width="49%">
+</p>
+
+<h1 align="center">readme_portrait</h1>
+
+<p align="center">
+  <b>Turn a photo or your GitHub avatar into an ASCII portrait that types itself into your profile README.</b><br>
+  One SVG file, one line of code. Runs entirely in your browser.
+</p>
+
+<p align="center">
+  <a href="https://kimjusnu.github.io/readme_portrait/"><b>→ Make yours in 30 seconds</b></a>
+  &nbsp;·&nbsp;
+  <a href="https://kimjusnu.github.io/readme_portrait/?u=octocat">try it with octocat</a>
+</p>
+
+---
+
+## Why this one
+
+- **Works inside GitHub's rules.** GitHub strips inline `<svg>` and blocks scripts and web fonts in README images. The typing effect is pure SMIL, so it actually plays on your profile.
+- **Never blank.** Every line is visible by default; the animation only delays it. Email previews, social cards and screenshots still show the full portrait.
+- **Same width on every OS.** Each line is pinned with `textLength`, so macOS, Windows and Linux fonts line up.
+- **Colour, not just shades.** Characters are picked by brightness and painted with the photo's own colours. The ramp has no blank character, so every cell carries colour.
+- **Small.** About 145 KB at 110×62 cells, well within what GitHub's image proxy handles comfortably.
+- **Private.** Your image never leaves the page. The only network call is the GitHub API lookup when you type a username.
+
+## Use it
+
+1. Open **https://kimjusnu.github.io/readme_portrait/** and drop an image or type your GitHub username.
+2. Download `portrait.svg` and upload it to `assets/portrait.svg` in your profile repository (`username/username`).
+3. Paste into `README.md` and commit:
+
+```html
+<img src="assets/portrait.svg" alt="ASCII portrait" width="49%">
+```
+
+Use `width="100%"` if it stands alone. Two cards of the same size side by side: put two `<img width="49%">` in one `<p>`, separated by a space.
+
+Options: columns (60–140), photo colours / grayscale / terminal green / amber, contrast boost, brightness, saturation, crop position, window title, `whoami` name, typing speed, and a wide 880×500 card.
+
+## How it works
+
+| Step | What happens |
+|---|---|
+| Crop | Centre crop to the text area's aspect (520:555), starting near the top where faces usually are |
+| Characters | Grayscale → histogram equalisation → 110×62 Lanczos resample → ramp `.:-=+*cs#%@` |
+| Colour | Saturation ×1.3, brightness ×1.6, quantised to `#rgb`; same-colour runs merge into one `<tspan>` |
+| Animation | Each row's clip rectangle grows 0 → 520 px; the delay sits in `keyTimes`, not `begin` |
+
+The JavaScript port reproduces the reference Python/Pillow script **cell for cell** (6,820/6,820 characters and colours on the sample avatar; the SVG is byte-identical). `npm test` checks every step against Pillow output.
+
+## Develop
+
+No build step. Serve the folder with any static server:
+
+```bash
+python -m http.server 8000     # then open http://localhost:8000
+npm test                       # unit tests against Pillow fixtures (Node 20+)
+python scripts/verify_e2e.py   # browser checks: match rate, size, 390px layout, network
+```
+
+## Roadmap
+
+- [ ] GitHub Actions template that redraws the portrait when your avatar changes
+- [ ] In-browser background removal for busy backgrounds
+- [ ] Drag to crop
+
+Ideas and pull requests are welcome. If this made your profile nicer, a ⭐ helps other people find it.
+
+---
+
+<details>
+<summary><b>한국어 안내</b></summary>
+
+사진을 올리거나 GitHub 아이디를 넣으면, 터미널 창 안에서 한 줄씩 타이핑되는 컬러 글자 초상 SVG를 만들어 주는 사이트입니다.
+
+1. https://kimjusnu.github.io/readme_portrait/ 에서 이미지를 올리거나 아이디를 입력합니다.
+2. `portrait.svg`를 내려받아 프로필 저장소(`아이디/아이디`)의 `assets/`에 올립니다.
+3. README에 `<img src="assets/portrait.svg" alt="ASCII portrait" width="49%">`를 붙여 넣고 커밋합니다.
+
+이미지는 서버로 전송되지 않고 브라우저 안에서만 처리됩니다.
+</details>
+
+MIT © [kimjusnu](https://github.com/kimjusnu)

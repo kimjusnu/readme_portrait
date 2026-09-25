@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ASCII Portrait for GitHub Profile README — readme_portrait</title>
+  <meta name="description" content="Turn a photo or your GitHub avatar into an animated, colour ASCII-art portrait SVG that types itself out in a terminal window. Free, runs in your browser, copy-paste into your GitHub profile README.">
+  <link rel="canonical" href="https://kimjusnu.github.io/readme_portrait/">
+  <meta name="theme-color" content="#0d1117">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="readme_portrait — animated ASCII portrait for your GitHub README">
+  <meta property="og:description" content="Photo or GitHub username in, typing terminal SVG out. Runs 100% in your browser.">
+  <meta property="og:url" content="https://kimjusnu.github.io/readme_portrait/">
+  <meta property="og:image" content="https://kimjusnu.github.io/readme_portrait/assets/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "SoftwareApplication",
+        "name": "readme_portrait",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Any (web browser)",
+        "url": "https://kimjusnu.github.io/readme_portrait/",
+        "description": "Browser tool that converts an image or GitHub avatar into an animated colour ASCII portrait SVG for GitHub profile READMEs.",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "codeRepository": "https://github.com/kimjusnu/readme_portrait",
+        "license": "https://opensource.org/licenses/MIT"
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "How do I add an ASCII art portrait to my GitHub profile README?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Generate portrait.svg here, upload it to the assets/ folder of your profile repository (username/username), then add <img src=\"assets/portrait.svg\" width=\"49%\"> to README.md and commit." }
+          },
+          {
+            "@type": "Question",
+            "name": "Why not paste the <svg> code straight into the README?",
+            "acceptedAnswer": { "@type": "Answer", "text": "GitHub strips inline <svg> from Markdown. The SVG must be a file loaded with <img>, where only SMIL animation runs, so the typing effect is built with SMIL." }
+          },
+          {
+            "@type": "Question",
+            "name": "Is my photo uploaded anywhere?",
+            "acceptedAnswer": { "@type": "Answer", "text": "No. The conversion runs entirely in your browser canvas. Only a GitHub username lookup calls the GitHub API to fetch the public avatar." }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="skip">Skip to converter</a>
+  <header class="top container">
+    <div class="brand">
+      <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="mono">readme_portrait</span>
+    </div>
+    <nav class="top-actions">
+      <button type="button" class="btn ghost" id="lang" aria-label="한국어로 보기">한국어</button>
+      <a class="btn ghost" href="https://github.com/kimjusnu/readme_portrait" data-i18n="star">★ Star on GitHub</a>
+    </nav>
+  </header>
+
+  <main id="main" class="container">
+    <section class="hero">
+      <h1 data-i18n="h1">An ASCII portrait that types itself into your GitHub README</h1>
+      <p class="lead" data-i18n="lead">Drop a photo or type your GitHub username. You get one SVG file and one line of code to paste. Everything runs in your browser.</p>
+    </section>
+
+    <div class="layout">
+      <section class="panel" aria-labelledby="in-title">
+        <h2 id="in-title" class="panel-title" data-i18n="input">1. Image</h2>
+
+        <form id="gh-form" class="row" novalidate>
+          <label class="field grow">
+            <span data-i18n="ghLabel">GitHub username</span>
+            <input id="gh-id" name="gh" autocomplete="off" spellcheck="false" placeholder="octocat" maxlength="39" required>
+          </label>
+          <button type="submit" class="btn primary" id="gh-go" data-i18n="ghGo">Use avatar</button>
+        </form>
+        <p class="hint muted"><span data-i18n="try">Try:</span> <a href="?u=kimjusnu">kimjusnu</a> · <a href="?u=octocat">octocat</a></p>
+
+        <p class="or" data-i18n="or">or</p>
+
+        <label class="drop" id="drop">
+          <input type="file" id="file" accept="image/png,image/jpeg,image/webp" class="visually-hidden">
+          <strong data-i18n="dropTitle">Drop an image here</strong>
+          <span data-i18n="dropHint">or press to choose · PNG, JPG, WebP · stays on your device</span>
+        </label>
+
+        <h2 class="panel-title" data-i18n="options">2. Options</h2>
+        <fieldset id="options" class="options" disabled>
+          <legend class="visually-hidden" data-i18n="options">2. Options</legend>
+          <label class="field">
+            <span><span data-i18n="cols">Columns</span> <output id="cols-out" class="mono">110</output></span>
+            <input type="range" id="cols" min="60" max="140" step="2" value="110">
+          </label>
+          <label class="field">
+            <span data-i18n="mode">Colour</span>
+            <select id="colorMode">
+              <option value="color" data-i18n="modeColor">Photo colours</option>
+              <option value="gray" data-i18n="modeGray">Grayscale</option>
+              <option value="green" data-i18n="modeGreen">Terminal green</option>
+              <option value="amber" data-i18n="modeAmber">Amber</option>
+            </select>
+          </label>
+          <label class="check"><input type="checkbox" id="equalize" checked> <span data-i18n="equalize">Boost contrast (histogram equalisation)</span></label>
+          <label class="field">
+            <span><span data-i18n="brightness">Brightness</span> <output id="brightness-out" class="mono">1.6</output></span>
+            <input type="range" id="brightness" min="0.6" max="2.6" step="0.1" value="1.6">
+          </label>
+          <label class="field">
+            <span><span data-i18n="saturation">Saturation</span> <output id="saturation-out" class="mono">1.3</output></span>
+            <input type="range" id="saturation" min="0" max="2.5" step="0.1" value="1.3">
+          </label>
+          <div class="field">
+            <span id="crop-label" data-i18n="crop">Crop position</span>
+            <div class="seg" role="group" aria-labelledby="crop-label">
+              <button type="button" class="btn small" data-crop="top" data-i18n="cropTop">Top</button>
+              <button type="button" class="btn small" data-crop="center" data-i18n="cropCenter">Middle</button>
+              <button type="button" class="btn small" data-crop="bottom" data-i18n="cropBottom">Bottom</button>
+            </div>
+            <input type="range" id="cropTop" min="0" max="0.12" step="0.01" value="0.02" aria-labelledby="crop-label">
+          </div>
+          <div class="row">
+            <label class="field grow"><span data-i18n="title">Window title name</span><input id="title" maxlength="39" value="user"></label>
+            <label class="field grow"><span data-i18n="name">whoami name</span><input id="name" maxlength="39" value="user"></label>
+          </div>
+          <label class="check"><input type="checkbox" id="animate" checked> <span data-i18n="animate">Typing animation</span></label>
+          <label class="field">
+            <span><span data-i18n="speed">Seconds per line</span> <output id="step-out" class="mono">0.07</output></span>
+            <input type="range" id="step" min="0.02" max="0.2" step="0.01" value="0.07">
+          </label>
+          <label class="field">
+            <span data-i18n="card">Card size</span>
+            <select id="card">
+              <option value="card" data-i18n="cardSide">560×635 · fits beside another card</option>
+              <option value="wide" data-i18n="cardWide">880×500 · wide, on its own</option>
+            </select>
+          </label>
+        </fieldset>
+      </section>
+
+      <section class="panel result" aria-labelledby="out-title">
+        <h2 id="out-title" class="panel-title" data-i18n="output">3. Result</h2>
+        <figure class="preview">
+          <img id="preview" src="assets/example.svg" alt="Example: colour ASCII portrait in a terminal window" width="560" height="635">
+          <figcaption id="caption" class="muted" data-i18n="example">Example output. Try it with your own image.</figcaption>
+        </figure>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+
+        <div class="row actions">
+          <a class="btn primary" id="download" aria-disabled="true" download="portrait.svg" data-i18n="download">Download portrait.svg</a>
+          <span class="mono muted" id="size"></span>
+        </div>
+
+        <div class="code-block">
+          <div class="code-head"><span data-i18n="codeHalf">README · beside another card (49%)</span><button type="button" class="btn small" data-copy="code-half" data-i18n="copy">Copy</button></div>
+          <pre><code id="code-half"></code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-head"><span data-i18n="codeFull">README · on its own (100%)</span><button type="button" class="btn small" data-copy="code-full" data-i18n="copy">Copy</button></div>
+          <pre><code id="code-full"></code></pre>
+        </div>
+        <label class="check"><input type="checkbox" id="credit" checked> <span data-i18n="credit">Add a tiny "made with readme_portrait" link</span></label>
+
+        <h3 class="sub" data-i18n="howTitle">Add it in 3 steps</h3>
+        <ol class="steps">
+          <li data-i18n="how1">Open your profile repository <code>username/username</code> and upload the file to <code>assets/portrait.svg</code>.</li>
+          <li data-i18n="how2">Paste the code above into <code>README.md</code>.</li>
+          <li data-i18n="how3">Commit. The typing animation plays on your profile page.</li>
+        </ol>
+
+        <div class="code-block">
+          <div class="code-head"><span data-i18n="aiTitle">Or hand it to an AI coding agent</span><button type="button" class="btn small" data-copy="ai-prompt" data-i18n="copy">Copy</button></div>
+          <pre><code id="ai-prompt"></code></pre>
+        </div>
+      </section>
+    </div>
+
+    <section class="faq" aria-labelledby="faq-title">
+      <h2 id="faq-title" data-i18n="faqTitle">Questions</h2>
+      <details><summary data-i18n="q1">Why not paste the &lt;svg&gt; straight into the README?</summary><p data-i18n="a1">GitHub strips inline SVG from Markdown. It has to be a file loaded with &lt;img&gt;, where scripts and web fonts are blocked and only SMIL animation runs. This tool builds the typing effect with SMIL and forces each line's width, so it looks the same on every OS.</p></details>
+      <details><summary data-i18n="q2">Is my photo uploaded?</summary><p data-i18n="a2">No. Pixels are read and converted in your browser. The only network call is the GitHub API lookup when you type a username.</p></details>
+      <details><summary data-i18n="q3">It looks blank in an email preview or screenshot.</summary><p data-i18n="a3">It should not: every line is visible by default and the animation only hides lines briefly while it plays. Turn the animation off for a fully static file.</p></details>
+    </section>
+  </main>
+
+  <footer class="container foot muted">
+    <span data-i18n="foot">MIT licensed · no tracking · made by</span> <a href="https://github.com/kimjusnu">@kimjusnu</a>
+  </footer>
+
+  <script type="module" src="js/ui.js"></script>
+</body>
+</html>
