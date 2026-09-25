@@ -1,5 +1,14 @@
 /* readme_portrait — retro-desktop windows, dithered sky, tight grotesk headlines.
    Tokens first; every colour, size and border below comes from here. */
+
+/* Korean pixel glyphs (Galmuri11, OFL), subset to the words in js/i18n.js; only fetched for Hangul */
+@font-face {
+  font-family: "Galmuri11";
+  src: url("assets/fonts/galmuri11-ko.woff2") format("woff2");
+  unicode-range: U+AC00-D7A3, U+3131-318E, U+300C-300D;
+  size-adjust: 88%; /* Galmuri runs larger than VT323 at the same font-size */
+  font-display: swap;
+}
 :root {
   --paper: #fefefe;
   --ink: #202020;
@@ -14,7 +23,7 @@
 
   --display: "Inter Tight", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
   --body: "Inter Tight", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
-  --pixel: "VT323", "JetBrains Mono", ui-monospace, monospace;
+  --pixel: "VT323", "Galmuri11", "JetBrains Mono", ui-monospace, monospace;
   --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --gutter: clamp(16px, 4vw, 48px);
