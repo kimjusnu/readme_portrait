@@ -206,6 +206,29 @@ def studio(browser) -> None:
     page.close()
 
 
+def image_input(browser) -> None:
+    """이미지 탭 전환과 클립보드 붙여넣기(Ctrl+V)로 변환되는지 본다."""
+    page = browser.new_page(viewport={"width": 1280, "height": 900}, locale="en-US")
+    page.goto(BASE)
+    page.click("#tab-image")
+    shown = page.is_visible("#panel-image") and not page.is_visible("#panel-id")
+    selected = page.get_attribute("#tab-image", "aria-selected") == "true"
+    check("8a image tab shows the drop zone", shown and selected, f"panel visible={shown}, aria-selected={selected}")
+    page.evaluate("""async () => {
+        const blob = await (await fetch("reference/sample-avatar.png")).blob();
+        const data = new DataTransfer();
+        data.items.add(new File([blob], "clip.png", { type: "image/png" }));
+        document.dispatchEvent(new ClipboardEvent("paste", { clipboardData: data, bubbles: true }));
+    }""")
+    try:
+        wait_ready(page, "pasted image")
+        ok = True
+    except Exception:
+        ok = False
+    check("8b pasting an image converts it", ok, page.text_content("#src-name"))
+    page.close()
+
+
 def visibility(browser) -> None:
     for name, wait in (("portrait.static.svg", 300), ("portrait.svg", 5500)):
         png = OUT / f"{name}.png"
@@ -256,6 +279,7 @@ def main() -> None:
             desktop(browser)
             visibility(browser)
             studio(browser)
+            image_input(browser)
             mobile(browser)
             github_lookup(browser)
             if os.environ.get("CHECK_GITHUB"):

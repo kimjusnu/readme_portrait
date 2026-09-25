@@ -72,17 +72,25 @@
         <div class="win-bar"><span>new_portrait.sh</span><span class="meta">v1.1</span></div>
         <div class="win-body">
           <h1 id="start-title" data-i18n="startTitle">MAKE YOUR PORTRAIT</h1>
-          <p data-i18n="startLead">Type a GitHub username, or drop any image on this page.</p>
-          <form id="gh-form" novalidate>
-            <label for="gh-id" class="visually-hidden" data-i18n="ghLabel">GitHub username</label>
-            <input id="gh-id" name="gh" autocomplete="off" spellcheck="false" placeholder="your-github-id" maxlength="39" required>
-            <button type="submit" class="btn solid block" id="gh-go" data-i18n="ghGo">Generate</button>
-          </form>
-          <p class="hint">
-            <span data-i18n="orFile">or</span>
-            <label class="drop-link"><input type="file" id="file" accept="image/png,image/jpeg,image/webp" class="visually-hidden"><span data-i18n="chooseFile">choose an image</span></label>
-            <span data-i18n="stays">· never leaves your device</span>
-          </p>
+          <div class="tabs" role="tablist" aria-label="Input">
+            <button type="button" role="tab" id="tab-id" aria-controls="panel-id" aria-selected="true" data-i18n="tabId">GitHub ID</button>
+            <button type="button" role="tab" id="tab-image" aria-controls="panel-image" aria-selected="false" tabindex="-1" data-i18n="tabImage">Image file</button>
+          </div>
+          <div role="tabpanel" id="panel-id" aria-labelledby="tab-id">
+            <form id="gh-form" novalidate>
+              <label for="gh-id" class="visually-hidden" data-i18n="ghLabel">GitHub username</label>
+              <input id="gh-id" name="gh" autocomplete="off" spellcheck="false" placeholder="your-github-id" maxlength="39" required>
+              <button type="submit" class="btn solid block" id="gh-go" data-i18n="ghGo">Generate</button>
+            </form>
+          </div>
+          <div role="tabpanel" id="panel-image" aria-labelledby="tab-image" hidden>
+            <label class="dropzone">
+              <input type="file" id="file" accept="image/png,image/jpeg,image/webp" class="visually-hidden">
+              <span class="dropzone-title" data-i18n="dropTitle">Drop an image or click to choose</span>
+              <span class="dropzone-hint" data-i18n="dropHint">PNG · JPG · WebP · or paste with Ctrl+V</span>
+            </label>
+          </div>
+          <p class="hint" data-i18n="stays">Everything runs in your browser. Nothing is uploaded.</p>
         </div>
       </section>
 
