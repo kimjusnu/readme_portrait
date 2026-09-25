@@ -265,6 +265,29 @@ def share_link(browser) -> None:
     ctx.close()
 
 
+def anim_styles(browser) -> None:
+    """스타일마다 재생이 끝난 뒤, 그리고 SMIL을 뺀 정지 상태에서 전 줄이 보이는지 잰다."""
+    page = browser.new_page(viewport={"width": 1280, "height": 900}, locale="en-US")
+    page.goto(BASE)
+    page.set_input_files("#file", str(SAMPLE))
+    wait_ready(page)
+    for style in ("reveal", "scan", "matrix"):
+        page.select_option("#anim", style)
+        page.wait_for_timeout(400)
+        svg = current_svg(page)
+        played = OUT / f"anim-{style}.svg"
+        frozen = OUT / f"anim-{style}.frozen.svg"
+        played.write_text(svg, encoding="utf-8")
+        frozen.write_text(re.sub(r"<animate(?:Transform)?\s[^>]*/>", "", svg), encoding="utf-8")
+        results = []
+        for path, wait in ((played, 6500), (frozen, 300)):
+            png = path.with_suffix(".png")
+            svg_shot(browser, path, png, wait)
+            results.append(rows_visible(png, 62, 2)[0])
+        check(f"10 {style}: all rows after playing / without SMIL", results == [62, 62], f"{results[0]}/62 played, {results[1]}/62 frozen")
+    page.close()
+
+
 def visibility(browser) -> None:
     for name, wait in (("portrait.static.svg", 300), ("portrait.svg", 5500)):
         png = OUT / f"{name}.png"
@@ -317,6 +340,7 @@ def main() -> None:
             studio(browser)
             image_input(browser)
             share_link(browser)
+            anim_styles(browser)
             mobile(browser)
             github_lookup(browser)
             if os.environ.get("CHECK_GITHUB"):

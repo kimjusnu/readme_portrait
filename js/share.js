@@ -1,6 +1,7 @@
 // Options <-> URL query. Links are untrusted input, so every value is validated and anything
 // out of range is dropped in favour of the default. Local images are never part of a link.
 import { DEFAULTS } from "./convert.js";
+import { STYLES } from "./anim.js";
 
 const NAME = /^[A-Za-z0-9._-]{1,39}$/;
 const USER = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
@@ -27,6 +28,7 @@ const FIELDS = {
   title: ["t", text],
   name: ["n", text],
   animate: ["a", bool],
+  anim: ["an", oneOf(...STYLES)],
   step: ["sp", num(0.02, 0.2)],
   card: ["card", oneOf("card", "wide")],
 };

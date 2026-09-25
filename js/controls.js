@@ -14,6 +14,7 @@ export function readControls() {
     title: $("title").value.trim() || "user",
     name: $("name").value.trim() || "user",
     animate: $("animate").checked,
+    anim: $("anim").value,
     step: Number($("step").value),
   };
 }
@@ -24,6 +25,7 @@ export function writeControls(opts) {
   $("title").value = opts.title;
   $("name").value = opts.name;
   $("animate").checked = opts.animate;
+  $("anim").value = opts.anim;
   for (const id of RANGES) $(id).value = String(opts[id]);
   for (const radio of document.querySelectorAll('input[name="contrast"]')) radio.checked = radio.value === opts.contrast;
   syncOutputs(opts);
@@ -36,6 +38,7 @@ export function syncOutputs(opts) {
     $(`${id}-out`).textContent = String(opts[id]);
   }
   $("step").disabled = !opts.animate;
+  $("anim").disabled = !opts.animate;
 }
 
 export function bindControls(store) {

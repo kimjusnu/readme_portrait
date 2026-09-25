@@ -23,6 +23,7 @@ export const DEFAULTS = Object.freeze({
   title: "user",
   name: "user",
   animate: true,
+  anim: "type", // entrance style, see js/anim.js
   step: 0.07, // seconds per typed line
 });
 
