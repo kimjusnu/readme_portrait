@@ -214,6 +214,11 @@ def image_input(browser) -> None:
     shown = page.is_visible("#panel-image") and not page.is_visible("#panel-id")
     selected = page.get_attribute("#tab-image", "aria-selected") == "true"
     check("8a image tab shows the drop zone", shown and selected, f"panel visible={shown}, aria-selected={selected}")
+    page.keyboard.press("ArrowLeft")
+    back = page.get_attribute("#tab-id", "aria-selected") == "true" and page.is_visible("#panel-id")
+    page.keyboard.press("End")
+    end = page.get_attribute("#tab-image", "aria-selected") == "true"
+    check("8c arrow keys and End move between tabs", back and end, f"ArrowLeft->id={back}, End->image={end}")
     page.evaluate("""async () => {
         const blob = await (await fetch("reference/sample-avatar.png")).blob();
         const data = new DataTransfer();
