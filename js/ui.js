@@ -242,7 +242,7 @@ function whenNear(elements, onNear, margin) {
   elements.forEach((el) => io.observe(el));
 }
 
-function findClassicSoon(slug) {
+function isKnownClassic(slug) {
   return document.querySelector(`.pick[data-classic="${slug}"]`) !== null;
 }
 
@@ -262,7 +262,7 @@ async function init() {
     $("studio").scrollIntoView();
     return;
   }
-  if (source?.kind === "classic" && findClassicSoon(source.id)) {
+  if (source?.kind === "classic" && isKnownClassic(source.id)) {
     await loadClassic(source.id, { opts: shared.opts });
     $("studio").scrollIntoView();
     return;
