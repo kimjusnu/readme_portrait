@@ -47,12 +47,22 @@ Options: columns (60–160), global / local / no contrast, zoom and drag-to-crop
 ### From the command line
 
 ```bash
-npx readme-portrait octocat                          # your avatar → assets/portrait.svg
-npx readme-portrait me.jpg --style matrix --contrast local -o assets/portrait.svg
-npx readme-portrait --help
+npx github:kimjusnu/readme_portrait#v1 octocat      # your avatar → assets/portrait.svg
+npx github:kimjusnu/readme_portrait#v1 me.jpg --style matrix --contrast local
+npx github:kimjusnu/readme_portrait#v1 --help
 ```
 
 The CLI runs the same converter as the site (Node 18.17+, PNG and JPEG input); for the sample avatar its output is byte-identical to the browser's.
+
+### Ask your AI coding agent
+
+A skill for Claude Code (and other agents that read `SKILL.md`) is included. Install it, then say "add an ASCII portrait to my GitHub profile":
+
+```bash
+npx skills add kimjusnu/readme_portrait
+```
+
+The skill finds your `username/username` repository, draws the SVG with the CLI, inserts the `<img>` line and asks before committing.
 
 ### Keep it fresh with GitHub Actions
 
