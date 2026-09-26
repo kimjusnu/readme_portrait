@@ -1,0 +1,41 @@
+# Runs the action from this checkout on a real runner and checks what it produced.
+name: action-test
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sample image through the action
+        id: sample
+        uses: ./
+        with:
+          image: reference/sample-avatar.png
+          output: out/sample.svg
+          args: --name kimjusnu
+          commit: "false"
+
+      - name: Output is byte-identical to the reference
+        run: cmp out/sample.svg reference/portrait.sample.svg
+
+      - name: Avatar through the action (matrix style)
+        uses: ./
+        with:
+          username: octocat
+          output: out/octocat.svg
+          args: --style matrix --contrast local
+          commit: "false"
+
+      - name: Avatar SVG looks right
+        run: |
+          head -c 4 out/octocat.svg | grep -q '<svg'
+          grep -q 'class="deco"' out/octocat.svg
+          grep -q 'octocat@github' out/octocat.svg
+          echo "size: $(wc -c < out/octocat.svg) bytes"
