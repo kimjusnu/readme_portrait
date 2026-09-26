@@ -65,4 +65,5 @@ runs:
         git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git add -- "$INPUT_OUTPUT"
         git commit -m "$INPUT_MESSAGE"
-        git push
+        # explicit target: works without an upstream (custom ref, detached checkout)
+        git push origin "HEAD:${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"

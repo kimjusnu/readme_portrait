@@ -7,6 +7,8 @@ on:
 permissions:
   contents: read
 
+# commit-path runs only by hand, on a throwaway branch, because it pushes
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -39,3 +41,30 @@ jobs:
           grep -q 'class="deco"' out/octocat.svg
           grep -q 'octocat@github' out/octocat.svg
           echo "size: $(wc -c < out/octocat.svg) bytes"
+
+  commit-path:
+    if: github.event_name == 'workflow_dispatch' && startsWith(github.ref_name, 'ci/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Detach, so the push must name its target
+        run: git checkout --detach
+
+      - name: Draw and commit
+        id: draw
+        uses: ./
+        with:
+          username: octocat
+          output: out/committed.svg
+
+      - name: The commit reached the branch
+        run: |
+          test "${{ steps.draw.outputs.changed }}" = "true"
+          git fetch origin "$GITHUB_REF_NAME"
+          git log -1 --format='%an | %s' "origin/$GITHUB_REF_NAME" | tee /dev/stderr | grep -q '^github-actions\[bot\] | chore: ASCII 초상 갱신$'
+          git show "origin/$GITHUB_REF_NAME:out/committed.svg" | head -c 4 | grep -q '<svg'
