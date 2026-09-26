@@ -42,7 +42,17 @@
 
 Use `width="100%"` if it stands alone. Two cards of the same size side by side: put two `<img width="49%">` in one `<p>`, separated by a space.
 
-Options: columns (60–160), global / local / no contrast, zoom and drag-to-crop, photo colours / grayscale / terminal green / amber, brightness, saturation, window title, `whoami` name, typing speed, and a wide 880×500 card.
+Options: columns (60–160), global / local / no contrast, zoom and drag-to-crop, photo colours / grayscale / terminal green / amber, four entrance styles (type, reveal, scanline, matrix rain), brightness, saturation, window title, `whoami` name, typing speed, and a wide 880×500 card. The studio also exports **PNG** and **GIF** for places outside GitHub, and **Copy link** shares your settings.
+
+### From the command line
+
+```bash
+npx readme-portrait octocat                          # your avatar → assets/portrait.svg
+npx readme-portrait me.jpg --style matrix --contrast local -o assets/portrait.svg
+npx readme-portrait --help
+```
+
+The CLI runs the same converter as the site (Node 18.17+, PNG and JPEG input); for the sample avatar its output is byte-identical to the browser's.
 
 ## How it works
 
@@ -61,7 +71,7 @@ No build step. Serve the folder with any static server:
 
 ```bash
 python -m http.server 8000     # then open http://localhost:8000
-npm test                       # unit tests against Pillow fixtures (Node 20+)
+npm install && npm test         # unit tests against Pillow/OpenCV fixtures and the CLI
 python scripts/verify_e2e.py   # browser checks: match rate, size, 390px layout, network, studio interactions
 python scripts/build_gallery.py  # re-render the public-domain gallery with the site's converter
 ```

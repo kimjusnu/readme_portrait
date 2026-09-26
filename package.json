@@ -1,8 +1,47 @@
 {
-  "name": "readme_portrait",
-  "private": true,
+  "name": "readme-portrait",
+  "version": "0.1.0",
+  "description": "Turn a photo or GitHub avatar into an animated colour ASCII portrait SVG for your GitHub profile README.",
+  "keywords": [
+    "github-profile-readme",
+    "ascii-art",
+    "svg",
+    "readme",
+    "portrait",
+    "cli"
+  ],
+  "homepage": "https://kimjusnu.github.io/readme_portrait/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kimjusnu/readme_portrait.git"
+  },
+  "bugs": "https://github.com/kimjusnu/readme_portrait/issues",
+  "license": "MIT",
+  "author": "kimjusnu",
   "type": "module",
+  "bin": {
+    "readme-portrait": "bin/readme-portrait.mjs"
+  },
+  "files": [
+    "bin/",
+    "cli/",
+    "js/convert.js",
+    "js/clahe.js",
+    "js/svg.js",
+    "js/anim.js",
+    "js/fmt.js",
+    "js/share.js",
+    "LICENSE",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18.17"
+  },
   "scripts": {
     "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "jpeg-js": "^0.4.4",
+    "pngjs": "^7.0.0"
   }
 }
