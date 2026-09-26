@@ -26,6 +26,18 @@ CLASSICS = [
     ("lincoln", "Abraham Lincoln O-77 matte collodion print.jpg", "Abraham Lincoln"),
     ("einstein", "Einstein 1921 by F Schmutzer - restoration.jpg", "Albert Einstein"),
     ("great_wave", "Tsunami by hokusai 19th century.jpg", "The Great Wave off Kanagawa"),
+    # 풍경·우주: 미국 정부(NASA·국립기록원) 저작물이라 퍼블릭 도메인
+    ("earthrise", "NASA-Apollo8-Dec24-Earthrise.jpg", "Earthrise"),
+    ("blue_marble", "The Earth seen from Apollo 17.jpg", "The Blue Marble"),
+    ("pillars", "Pillars of creation 2014 HST WFC3-UVIS full-res denoised.jpg", "Pillars of Creation"),
+    ("tetons", "Adams The Tetons and the Snake River.jpg", "The Tetons and the Snake River"),
+]
+
+# 이 저장소를 위해 이미지 생성으로 만든 오리지널 캐릭터(기존 작품 캐릭터 아님). assets/classics/<slug>.jpg에 직접 둔다
+GENERATED = [
+    ("anime_dev", "Original anime-style developer"),
+    ("anime_hacker", "Original anime-style night coder"),
+    ("anime_rooftop", "Original anime-style rooftop coder"),
 ]
 
 
@@ -76,7 +88,10 @@ def main() -> None:
     (ROOT / "CREDITS.md").write_text(
         "# Credits\n\nExample images are public-domain works downloaded from Wikimedia Commons "
         "and resized for the web (`scripts/fetch_classics.py`).\n\n"
-        "| Work | Author | Date | License | Source |\n|---|---|---|---|---|\n" + "\n".join(rows) + "\n",
+        "| Work | Author | Date | License | Source |\n|---|---|---|---|---|\n" + "\n".join(rows) + "\n\n"
+        "## Original illustrations\n\nMade for this project with AI image generation (ChatGPT). They show original characters, "
+        "not characters from any existing work, and are released under the same MIT licence as the code.\n\n"
+        + "\n".join(f"- `{slug}.jpg`: {title}" for slug, title in GENERATED) + "\n",
         encoding="utf-8",
     )
 

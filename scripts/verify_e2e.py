@@ -354,6 +354,31 @@ def export_images(browser) -> None:
     ctx.close()
 
 
+def gallery_tabs(browser) -> None:
+    """갤러리 탭: 고른 분류의 카드만 보이고, 그 카드의 SVG가 실제로 불려 오며, 방향키로도 옮겨진다."""
+    page = browser.new_page(viewport={"width": 1280, "height": 900}, locale="en-US")
+    page.goto(BASE)
+    label = page.get_attribute("#gallery-grid", "aria-labelledby")
+    check("12c gallery panel is labelled before any click", label == "gtab-art", f"aria-labelledby={label}")
+    counts = {}
+    for group in ("art", "anime", "space"):
+        page.click(f"#gtab-{group}")
+        page.locator("#gallery-grid").scroll_into_view_if_needed()
+        page.wait_for_timeout(600)
+        visible = page.locator(f"#gallery-grid figure[data-group='{group}']:visible").count()
+        others = page.locator(f"#gallery-grid figure:not([data-group='{group}']):visible").count()
+        loaded = page.evaluate(f"""[...document.querySelectorAll("#gallery-grid figure[data-group='{group}'] img:not(noscript img)")]
+            .filter(i => i.complete && i.naturalWidth > 0).length""")
+        counts[group] = (visible, others, loaded)
+    ok = all(v > 0 and o == 0 and l == v for v, o, l in counts.values())
+    check("12a gallery tabs show one category and load its cards", ok, str(counts))
+    page.focus("#gtab-space")
+    page.keyboard.press("ArrowRight")
+    wrapped = page.get_attribute("#gtab-art", "aria-selected") == "true"
+    check("12b gallery tabs wrap with arrow keys", wrapped, f"space -> ArrowRight -> art: {wrapped}")
+    page.close()
+
+
 def visibility(browser) -> None:
     for name, wait in (("portrait.static.svg", 300), ("portrait.svg", 5500)):
         png = OUT / f"{name}.png"
@@ -404,6 +429,7 @@ def main() -> None:
             desktop(browser)
             visibility(browser)
             studio(browser)
+            gallery_tabs(browser)
             image_input(browser)
             share_link(browser)
             anim_styles(browser)

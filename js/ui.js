@@ -207,6 +207,32 @@ function bindTabs() {
   });
 }
 
+// Gallery category tabs: one panel whose data-group filters the cards (CSS does the hiding)
+function bindGalleryTabs() {
+  const tabs = [...document.querySelectorAll(".gallery-tabs [role=tab]")];
+  const grid = $("gallery-grid");
+  const select = (tab, focus) => {
+    for (const t of tabs) {
+      const on = t === tab;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+    }
+    grid.dataset.group = tab.dataset.group;
+    grid.setAttribute("aria-labelledby", tab.id);
+    if (focus) tab.focus();
+  };
+  tabs.forEach((tab, i) => {
+    tab.addEventListener("click", () => select(tab, false));
+    tab.addEventListener("keydown", (e) => {
+      const n = tabs.length;
+      const next = { ArrowRight: (i + 1) % n, ArrowLeft: (i - 1 + n) % n, Home: 0, End: n - 1 }[e.key];
+      if (next === undefined) return;
+      e.preventDefault();
+      select(tabs[next], true);
+    });
+  });
+}
+
 // Ctrl+V anywhere: an image on the clipboard goes straight to the studio (typing into inputs is left alone)
 function bindPaste() {
   document.addEventListener("paste", (e) => {
@@ -221,6 +247,7 @@ function bindPaste() {
 
 function bindEvents() {
   bindTabs();
+  bindGalleryTabs();
   bindPaste();
   $("gh-form").addEventListener("submit", (e) => {
     e.preventDefault();
