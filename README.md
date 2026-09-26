@@ -1,7 +1,7 @@
 <p align="center">
   <img src="assets/gallery/mona_lisa.svg" alt="Mona Lisa as an animated colour ASCII portrait" width="32%">
-  <img src="assets/gallery/pearl_earring.svg" alt="Girl with a Pearl Earring as an animated colour ASCII portrait" width="32%">
-  <img src="assets/gallery/van_gogh.svg" alt="Van Gogh self-portrait as an animated colour ASCII portrait" width="32%">
+  <img src="assets/gallery/anime_dev.svg" alt="An original anime-style developer as an animated colour ASCII portrait" width="32%">
+  <img src="assets/gallery/blue_marble.svg" alt="The Blue Marble photo of Earth as an animated colour ASCII portrait" width="32%">
 </p>
 
 <h1 align="center">readme_portrait</h1>
@@ -138,6 +138,6 @@ Ideas and pull requests are welcome. If this made your profile nicer, a ⭐ help
 이미지는 서버로 전송되지 않고 브라우저 안에서만 처리됩니다.
 </details>
 
-Gallery images are public-domain works from Wikimedia Commons; see [CREDITS.md](CREDITS.md). Fonts (Inter Tight, JetBrains Mono, VT323) are self-hosted under the SIL Open Font License.
+Gallery images are public-domain works from Wikimedia Commons (paintings, NASA photos) and original anime-style illustrations made for this project; see [CREDITS.md](CREDITS.md). Fonts (Inter Tight, JetBrains Mono, VT323) are self-hosted under the SIL Open Font License.
 
 MIT © [kimjusnu](https://github.com/kimjusnu)

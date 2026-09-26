@@ -5,7 +5,7 @@
 - Site: https://kimjusnu.github.io/readme_portrait/
 - Source (MIT): https://github.com/kimjusnu/readme_portrait
 - Deep link: https://kimjusnu.github.io/readme_portrait/?u=<github-username> loads that user's avatar
-- Gallery: public-domain examples (Mona Lisa, Girl with a Pearl Earring, Van Gogh, Lincoln, Einstein, The Great Wave) rendered by the same converter
+- Gallery (tabs): public-domain paintings (Mona Lisa, Girl with a Pearl Earring, Van Gogh, Lincoln, Einstein, The Great Wave), original anime-style avatars, and NASA / Ansel Adams space and landscape photos, all rendered by the same converter
 
 ## How it works
 - Crops the image to the text area (zoom and drag-to-crop), applies histogram equalisation or local contrast (CLAHE 8×8, clip 2.0, matching OpenCV), samples 110×62 cells, picks a character from the ramp `.:-=+*cs#%@` by brightness and colours it with the original pixel colour (saturation ×1.3, brightness ×1.6).

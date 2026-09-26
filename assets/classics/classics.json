@@ -1,8 +1,15 @@
 [
-  {"slug": "mona_lisa", "title": "Mona Lisa", "author": "Leonardo da Vinci", "year": "c. 1503", "handle": "leonardo", "options": {"zoom": 2.0, "cropTop": 0.04, "cropX": 0.48, "contrast": "local"}},
-  {"slug": "pearl_earring", "title": "Girl with a Pearl Earring", "author": "Johannes Vermeer", "year": "1665", "handle": "vermeer", "options": {"zoom": 1.25, "cropTop": 0.08, "cropX": 0.52, "contrast": "global"}},
-  {"slug": "van_gogh", "title": "Self-Portrait", "author": "Vincent van Gogh", "year": "1887", "handle": "vincent", "options": {"zoom": 1.15, "cropTop": 0.03, "cropX": 0.5, "contrast": "local"}},
-  {"slug": "lincoln", "title": "Abraham Lincoln", "author": "Alexander Gardner", "year": "1863", "handle": "abe", "options": {"zoom": 1.5, "cropTop": 0.02, "cropX": 0.52, "saturation": 0, "contrast": "global"}},
-  {"slug": "einstein", "title": "Albert Einstein", "author": "Ferdinand Schmutzer", "year": "1921", "handle": "albert", "options": {"zoom": 2.25, "cropTop": 0.05, "cropX": 0.6, "saturation": 0, "contrast": "local"}},
-  {"slug": "great_wave", "title": "The Great Wave off Kanagawa", "author": "Katsushika Hokusai", "year": "c. 1831", "handle": "hokusai", "options": {"card": "wide", "cols": 150, "zoom": 1, "cropTop": 0, "cropX": 0.5, "contrast": "local"}}
+  {"slug": "mona_lisa", "title": "Mona Lisa", "author": "Leonardo da Vinci", "year": "c. 1503", "handle": "leonardo", "options": {"zoom": 2.0, "cropTop": 0.04, "cropX": 0.48, "contrast": "local"}, "group": "art"},
+  {"slug": "pearl_earring", "title": "Girl with a Pearl Earring", "author": "Johannes Vermeer", "year": "1665", "handle": "vermeer", "options": {"zoom": 1.25, "cropTop": 0.08, "cropX": 0.52, "contrast": "global"}, "group": "art"},
+  {"slug": "van_gogh", "title": "Self-Portrait", "author": "Vincent van Gogh", "year": "1887", "handle": "vincent", "options": {"zoom": 1.15, "cropTop": 0.03, "cropX": 0.5, "contrast": "local"}, "group": "art"},
+  {"slug": "lincoln", "title": "Abraham Lincoln", "author": "Alexander Gardner", "year": "1863", "handle": "abe", "options": {"zoom": 1.5, "cropTop": 0.02, "cropX": 0.52, "saturation": 0, "contrast": "global"}, "group": "art"},
+  {"slug": "einstein", "title": "Albert Einstein", "author": "Ferdinand Schmutzer", "year": "1921", "handle": "albert", "options": {"zoom": 2.25, "cropTop": 0.05, "cropX": 0.6, "saturation": 0, "contrast": "local"}, "group": "art"},
+  {"slug": "great_wave", "title": "The Great Wave off Kanagawa", "author": "Katsushika Hokusai", "year": "c. 1831", "handle": "hokusai", "options": {"card": "wide", "cols": 150, "zoom": 1, "cropTop": 0, "cropX": 0.5, "contrast": "local"}, "group": "art"},
+  {"slug": "anime_dev", "title": "Silver-haired developer", "author": "original illustration", "year": "2026", "handle": "shiro", "group": "anime", "options": {"zoom": 1.1, "cropTop": 0.02, "cropX": 0.5, "contrast": "local"}},
+  {"slug": "anime_hacker", "title": "Night coder", "author": "original illustration", "year": "2026", "handle": "yoru", "group": "anime", "options": {"zoom": 1.1, "cropTop": 0.02, "cropX": 0.5, "contrast": "local"}},
+  {"slug": "anime_rooftop", "title": "Rooftop coder", "author": "original illustration", "year": "2026", "handle": "aka", "group": "anime", "options": {"zoom": 1.1, "cropTop": 0.02, "cropX": 0.5, "contrast": "local"}},
+  {"slug": "earthrise", "title": "Earthrise", "author": "William Anders / NASA", "year": "1968", "handle": "apollo8", "group": "space", "options": {"zoom": 2.4, "cropTop": 0.33, "cropX": 0.54, "contrast": "global"}},
+  {"slug": "blue_marble", "title": "The Blue Marble", "author": "Apollo 17 crew / NASA", "year": "1972", "handle": "apollo17", "group": "space", "options": {"zoom": 1.05, "cropTop": 0.02, "cropX": 0.5, "contrast": "global"}},
+  {"slug": "pillars", "title": "Pillars of Creation", "author": "NASA, ESA, Hubble", "year": "2014", "handle": "hubble", "group": "space", "options": {"zoom": 1, "cropTop": 0.02, "cropX": 0.5, "contrast": "local"}},
+  {"slug": "tetons", "title": "The Tetons and the Snake River", "author": "Ansel Adams", "year": "1942", "handle": "ansel", "group": "space", "options": {"card": "wide", "cols": 150, "zoom": 1, "cropTop": 0, "cropX": 0.5, "contrast": "local", "saturation": 0}}
 ]
