@@ -1,7 +1,8 @@
 import { loadFont } from "@remotion/fonts";
 import React from "react";
 import {
-  AbsoluteFill, Composition, Easing, Img, Sequence, interpolate, staticFile, useCurrentFrame, useVideoConfig,
+  AbsoluteFill, Composition, Easing, Img, Sequence, cancelRender, continueRender, delayRender, interpolate, staticFile,
+  useCurrentFrame, useVideoConfig,
 } from "remotion";
 import portraits from "./portraits.json";
 import { scopeIds, svgAt } from "./smil";
@@ -11,11 +12,13 @@ const DISPLAY = "Inter Tight";
 const PIXEL = "VT323";
 const MONO = "JetBrains Mono";
 
+// Hold every frame until the fonts are in, so no frame is captured with a fallback font
+const fontsReady = delayRender("Loading fonts");
 Promise.all([
   loadFont({ family: DISPLAY, url: staticFile("inter-tight.woff2"), weight: "500 800" }),
   loadFont({ family: PIXEL, url: staticFile("vt323.woff2") }),
   loadFont({ family: MONO, url: staticFile("jetbrains-mono.woff2"), weight: "400 700" }),
-]);
+]).then(() => continueRender(fontsReady), (err) => cancelRender(err));
 
 const FPS = 30;
 const SCENES = { intro: 90, gallery: 240, styles: 210, outro: 150 };
