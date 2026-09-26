@@ -12,7 +12,7 @@ Draws a terminal-window SVG in which the user's portrait types itself out line b
 1. **Find the profile repository.** It is the repository named exactly like the owner (`username/username`).
    - `git remote get-url origin` in the current directory. If it is not `username/username`, ask the user whether to clone theirs (`gh repo clone username/username`) or to use a different path. Do not create a repository without asking.
    - Username: the repository owner, or `gh api user --jq .login`.
-2. **Draw the SVG** (Node 18.17+):
+2. **Draw the SVG** from the root of that repository (after a fresh clone, `cd` into it first; paths below are relative to it). Needs Node 18.17+:
    ```bash
    npx --yes github:kimjusnu/readme_portrait#v1 <username> -o assets/portrait.svg
    ```
