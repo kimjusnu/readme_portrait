@@ -340,6 +340,14 @@ def export_images(browser) -> None:
         px = g.convert("RGB").load()
         return sum(1 for y in range(int(37 + 555 * 0.7), int(37 + 555 * 0.95)) for x in range(20, 540) if max(px[x, y]) > 90)
 
+    def cursor_on(path: Path) -> bool:
+        g = Image.open(path)
+        g.seek(g.n_frames - 1)
+        px = g.convert("RGB").load()
+        # the cursor is an 8×14 light block on the prompt line (y ≈ 599–613)
+        return any(min(px[x, y]) > 170 for y in range(600, 612) for x in range(150, 400))
+
+    check("11d GIF last frame keeps the cursor", cursor_on(gif) and cursor_on(rain), f"typing {cursor_on(gif)}, matrix {cursor_on(rain)}")
     typing_lit, rain_lit = lower_lit(gif, 0.35), lower_lit(rain, 0.35)
     check("11c matrix GIF bakes the falling glyphs", typing_lit == 0 and rain_lit > 100,
           f"lit pixels below the reveal line: typing {typing_lit}, matrix {rain_lit}")

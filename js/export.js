@@ -70,7 +70,8 @@ function bake(live, t) {
   const copy = live.cloneNode(true);
   [...copy.querySelectorAll("animate, animateTransform")].forEach((anim, i) => {
     const target = anim.parentElement;
-    if (values[i] !== null) target.setAttribute(anim.getAttribute("attributeName"), values[i]);
+    // looping animations (the cursor blink) keep their static, visible state
+    if (values[i] !== null && !anim.hasAttribute("repeatCount")) target.setAttribute(anim.getAttribute("attributeName"), values[i]);
     anim.remove();
   });
   return new XMLSerializer().serializeToString(copy);
