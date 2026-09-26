@@ -14,8 +14,10 @@
 - Rows are visible by default; the typing delay lives in keyTimes, so the image is never blank where animation does not run.
 
 ## Command line
-- `npx readme-portrait <github-username | image.png | image.jpg> [-o assets/portrait.svg] [--style type|reveal|scan|matrix] [--contrast global|local|none] [--cols 60-160]`
+- `npx github:kimjusnu/readme_portrait#v1 <github-username | image.png | image.jpg> [-o assets/portrait.svg] [--style type|reveal|scan|matrix] [--contrast global|local|none] [--cols 60-160]`
 - Same converter as the site; output for the reference avatar is byte-identical.
+- GitHub Action: `uses: kimjusnu/readme_portrait@v1` (inputs: username, image, output, args, commit).
+- Agent skill: `npx skills add kimjusnu/readme_portrait` installs `skills/readme-portrait/SKILL.md`.
 
 ## Add to a profile README
 1. Download portrait.svg and upload it to assets/portrait.svg in the repository named after your username (username/username).
