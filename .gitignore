@@ -2,3 +2,6 @@
 node_modules/
 __pycache__/
 HANDOFF.md
+video/node_modules/
+video/out/
+video/src/portraits.json

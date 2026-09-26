@@ -1,0 +1,32 @@
+{
+  "name": "readme-portrait-demo",
+  "version": "1.0.0",
+  "description": "Demo video for readme_portrait (Remotion)",
+  "repository": {},
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@remotion/cli": "4.0.529",
+    "@remotion/fonts": "4.0.529",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.529"
+  },
+  "devDependencies": {
+    "@remotion/eslint-config-flat": "4.0.529",
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "eslint": "9.19.0",
+    "prettier": "3.8.1",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "data": "node scripts/make-data.mjs",
+    "dev": "npm run data && remotion studio",
+    "render": "npm run data && remotion render Demo ../launch/demo.mp4 --codec=h264 --crf=20",
+    "lint": "eslint src && tsc"
+  },
+  "sideEffects": [
+    "*.css"
+  ]
+}
