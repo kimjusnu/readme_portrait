@@ -358,6 +358,8 @@ def gallery_tabs(browser) -> None:
     """갤러리 탭: 고른 분류의 카드만 보이고, 그 카드의 SVG가 실제로 불려 오며, 방향키로도 옮겨진다."""
     page = browser.new_page(viewport={"width": 1280, "height": 900}, locale="en-US")
     page.goto(BASE)
+    label = page.get_attribute("#gallery-grid", "aria-labelledby")
+    check("12c gallery panel is labelled before any click", label == "gtab-art", f"aria-labelledby={label}")
     counts = {}
     for group in ("art", "anime", "space"):
         page.click(f"#gtab-{group}")
