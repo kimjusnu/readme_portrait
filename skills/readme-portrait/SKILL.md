@@ -14,7 +14,7 @@ Draws a terminal-window SVG in which the user's portrait types itself out line b
    - Username: the repository owner, or `gh api user --jq .login`.
 2. **Draw the SVG** from the root of that repository (after a fresh clone, `cd` into it first; paths below are relative to it). Needs Node 18.17+:
    ```bash
-   npx --yes github:kimjusnu/readme_portrait#v1 <username> -o assets/portrait.svg
+   npx --yes readme-portrait <username> -o assets/portrait.svg
    ```
    Use an image path instead of the username if the user gave a photo. Useful options (see `--help`):
    - `--style type|reveal|scan|matrix` entrance animation (default `type`)

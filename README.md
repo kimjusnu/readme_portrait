@@ -7,6 +7,12 @@
 <h1 align="center">readme_portrait</h1>
 
 <p align="center">
+  <a href="https://www.npmjs.com/package/readme-portrait"><img src="https://img.shields.io/npm/v/readme-portrait?color=1fd466&label=npm" alt="npm version"></a>
+  <a href="https://github.com/marketplace/actions/readme-portrait"><img src="https://img.shields.io/badge/action-%40v1-1fd466" alt="GitHub Action v1"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/kimjusnu/readme_portrait?color=141414" alt="MIT license"></a>
+</p>
+
+<p align="center">
   <b>Turn a photo or your GitHub avatar into an ASCII portrait that types itself into your profile README.</b><br>
   One SVG file, one line of code. Runs entirely in your browser.
 </p>
@@ -47,12 +53,12 @@ Options: columns (60–160), global / local / no contrast, zoom and drag-to-crop
 ### From the command line
 
 ```bash
-npx github:kimjusnu/readme_portrait#v1 octocat      # your avatar → assets/portrait.svg
-npx github:kimjusnu/readme_portrait#v1 me.jpg --style matrix --contrast local
-npx github:kimjusnu/readme_portrait#v1 --help
+npx readme-portrait octocat                          # your avatar → assets/portrait.svg
+npx readme-portrait me.jpg --style matrix --contrast local
+npx readme-portrait --help
 ```
 
-The CLI runs the same converter as the site (Node 18.17+, PNG and JPEG input); for the sample avatar its output is byte-identical to the browser's.
+The CLI ([npm](https://www.npmjs.com/package/readme-portrait)) runs the same converter as the site (Node 18.17+, PNG and JPEG input); for the sample avatar its output is byte-identical to the browser's.
 
 ### Ask your AI coding agent
 
