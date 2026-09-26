@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { readFileSync, mkdtempSync, existsSync } from "node:fs";
+import { readFileSync, mkdtempSync, existsSync, copyFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -42,6 +42,15 @@ test("invalid options fail with a message and write nothing", () => {
   assert.notEqual(r.status, 0);
   assert.match(r.stderr, /cols/);
   assert.equal(existsSync(out), false);
+});
+
+test("an existing file without an extension is read as a file, not a username", () => {
+  const dir = tmp();
+  copyFileSync(sample, join(dir, "photo"));
+  const out = join(dir, "p.svg");
+  const r = spawnSync(process.execPath, [bin, "photo", "--name", "kimjusnu", "--out", out], { encoding: "utf8", cwd: dir });
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(readFileSync(out, "utf8"), readFileSync(join(root, "reference", "portrait.sample.svg"), "utf8"));
 });
 
 test("--help prints usage", () => {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // readme-portrait: the site's converter on the command line.
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, existsSync, statSync } from "node:fs";
 import { dirname } from "node:path";
 import { parseArgs } from "node:util";
 import { DEFAULTS, toCells } from "../js/convert.js";
@@ -62,7 +62,9 @@ async function fetchAvatar(id) {
   return Buffer.from(await img.arrayBuffer());
 }
 
-const looksLikeFile = (input) => /\.(png|jpe?g|webp)$/i.test(input) || /[\\/]/.test(input);
+// An existing file always wins; something shaped like a path must be a file, never a username
+const looksLikeFile = (input) =>
+  (existsSync(input) && statSync(input).isFile()) || /\.(png|jpe?g|webp)$/i.test(input) || /[\\/]/.test(input);
 
 async function main() {
   const { values, positionals } = parseArgs({
