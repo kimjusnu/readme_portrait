@@ -1,0 +1,69 @@
+name: "readme-portrait"
+description: "Redraw an animated colour ASCII portrait SVG of your GitHub avatar for your profile README."
+author: "kimjusnu"
+branding:
+  icon: "terminal"
+  color: "green"
+
+inputs:
+  username:
+    description: "GitHub username whose avatar to draw (default: the repository owner)"
+    default: ${{ github.repository_owner }}
+  image:
+    description: "Path to an image in the repository to draw instead of the avatar"
+    default: ""
+  output:
+    description: "Where to write the SVG"
+    default: "assets/portrait.svg"
+  args:
+    description: "Extra CLI options, e.g. --style matrix --contrast local"
+    default: ""
+  commit:
+    description: "Commit and push the SVG when it changed (true/false)"
+    default: "true"
+  commit-message:
+    description: "Commit message"
+    default: "chore: ASCII 초상 갱신"
+
+outputs:
+  changed:
+    description: "true when the SVG changed"
+    value: ${{ steps.diff.outputs.changed }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install converter
+      shell: bash
+      run: npm ci --omit=dev --prefix "$GITHUB_ACTION_PATH" --no-audit --no-fund
+
+    - name: Draw portrait
+      shell: bash
+      env:
+        INPUT_SOURCE: ${{ inputs.image != '' && inputs.image || inputs.username }}
+        INPUT_OUTPUT: ${{ inputs.output }}
+        INPUT_ARGS: ${{ inputs.args }}
+      # word splitting of INPUT_ARGS is intentional (it holds several flags); inputs never reach the shell as code
+      run: node "$GITHUB_ACTION_PATH/bin/readme-portrait.mjs" "$INPUT_SOURCE" -o "$INPUT_OUTPUT" $INPUT_ARGS
+
+    - name: Detect change
+      id: diff
+      shell: bash
+      env:
+        INPUT_OUTPUT: ${{ inputs.output }}
+      run: |
+        if git status --porcelain -- "$INPUT_OUTPUT" | grep -q .; then echo "changed=true" >> "$GITHUB_OUTPUT"; else echo "changed=false" >> "$GITHUB_OUTPUT"; fi
+
+    - name: Commit
+      if: inputs.commit == 'true' && steps.diff.outputs.changed == 'true'
+      shell: bash
+      env:
+        INPUT_OUTPUT: ${{ inputs.output }}
+        INPUT_MESSAGE: ${{ inputs.commit-message }}
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add -- "$INPUT_OUTPUT"
+        git commit -m "$INPUT_MESSAGE"
+        # explicit target: works without an upstream (custom ref, detached checkout)
+        git push origin "HEAD:${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"

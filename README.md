@@ -54,6 +54,29 @@ npx readme-portrait --help
 
 The CLI runs the same converter as the site (Node 18.17+, PNG and JPEG input); for the sample avatar its output is byte-identical to the browser's.
 
+### Keep it fresh with GitHub Actions
+
+Redraw the portrait whenever your avatar changes. Add `.github/workflows/portrait.yml` to your profile repository:
+
+```yaml
+name: portrait
+on:
+  schedule: [{ cron: "0 0 * * 0" }]   # every Sunday
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  draw:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: kimjusnu/readme_portrait@v1
+        with:
+          args: --style reveal --contrast local   # any CLI option
+```
+
+Inputs: `username` (default: the repository owner), `image` (a file in the repo instead of the avatar), `output` (default `assets/portrait.svg`), `args`, `commit` (default `true`), `commit-message`. It only commits when the SVG actually changed.
+
 ## How it works
 
 | Step | What happens |
@@ -78,7 +101,7 @@ python scripts/build_gallery.py  # re-render the public-domain gallery with the 
 
 ## Roadmap
 
-- [ ] GitHub Actions template that redraws the portrait when your avatar changes
+- [x] GitHub Action that redraws the portrait when your avatar changes
 - [ ] In-browser background removal for busy backgrounds
 - [x] Drag to crop
 - [x] Local contrast (CLAHE)
