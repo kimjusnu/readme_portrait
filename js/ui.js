@@ -10,6 +10,7 @@ import { showPreview, replay } from "./preview.js";
 import { bindControls, writeControls, syncOutputs } from "./controls.js";
 import { loadCatalog, bindPicks, findClassic, classicBlob, markPick } from "./classics.js";
 import { encodeShare, decodeShare } from "./share.js";
+import { exportPng, exportGif } from "./export.js";
 
 const $ = (id) => document.getElementById(id);
 const LIMIT_KB = 300;
@@ -20,6 +21,7 @@ const store = createStore({ pixels: null, source: "", ref: null, username: "", o
 const shared = decodeShare(location.search);
 const source = mountSource($("source"), store);
 let timer = 0;
+let current = null; // last rendered { cells, opts, svg } for the exporters
 const catalogReady = loadCatalog().catch(() => []);
 
 function setStatus(text, kind = "") {
@@ -38,6 +40,9 @@ function render() {
   const t2 = performance.now();
   const shown = reducedMotion.matches && opts.animate ? renderSvg(result.cells, { ...opts, animate: false }) : svg;
   const kb = showPreview({ svg, shown, layout: result.layout, name: opts.name, label: name });
+  current = { cells: result.cells, opts, svg };
+  $("export-png").disabled = false;
+  $("export-gif").disabled = !opts.animate;
   drawPipeline(result, opts, { convert: t1 - t0, svg: t2 - t1 });
   $("size").textContent = `${kb} KB · ${result.layout.cols}×${result.layout.rows}`;
   if (kb > LIMIT_KB) setStatus(msg("tooBig", kb), "warn");
@@ -107,6 +112,29 @@ async function copyText(text, done) {
     setStatus(msg("copyFailed"), "error");
     return false;
   }
+}
+
+async function runExport(button, job) {
+  if (!current) return;
+  const buttons = [$("export-png"), $("export-gif")];
+  buttons.forEach((b) => { b.disabled = true; });
+  try {
+    const bytes = await job();
+    setStatus(msg("exported", button, Math.round(bytes / 102.4) / 10));
+  } catch (err) {
+    console.error("export failed", err);
+    setStatus(msg("exportFailed"), "error");
+  } finally {
+    $("export-png").disabled = false;
+    $("export-gif").disabled = !current.opts.animate;
+  }
+}
+
+function bindExports() {
+  $("export-png").addEventListener("click", () =>
+    runExport("PNG", () => exportPng(renderSvg(current.cells, { ...current.opts, animate: false }))));
+  $("export-gif").addEventListener("click", () =>
+    runExport("GIF", () => exportGif(current.svg, { onProgress: (i, n) => setStatus(msg("gifProgress", i, n)) })));
 }
 
 function copyShareLink() {
@@ -216,6 +244,7 @@ function bindEvents() {
   $("credit").addEventListener("change", updateSnippets);
   $("replay").addEventListener("click", replay);
   $("share").addEventListener("click", copyShareLink);
+  bindExports();
   $("download").addEventListener("click", () => setStatus(msg("downloaded")));
   $("lang").addEventListener("click", () => {
     const next = currentLang() === "ko" ? "en" : "ko";

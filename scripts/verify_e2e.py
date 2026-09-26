@@ -288,6 +288,64 @@ def anim_styles(browser) -> None:
     page.close()
 
 
+def export_images(browser) -> None:
+    """PNG는 2배 해상도, GIF는 첫 프레임이 비고 마지막 프레임이 완성본과 같은 줄을 보이는지 잰다."""
+    ctx = browser.new_context(viewport={"width": 1280, "height": 900}, locale="en-US", accept_downloads=True)
+    page = ctx.new_page()
+    page.goto(BASE)
+    page.set_input_files("#file", str(SAMPLE))
+    wait_ready(page)
+    with page.expect_download() as dl:
+        page.click("#export-png")
+    png = OUT / "export.png"
+    dl.value.save_as(str(png))
+    size = Image.open(png).size
+    check("11a PNG export at 2x", dl.value.suggested_filename == "portrait.png" and size == (1120, 1270), f"{dl.value.suggested_filename} {size}")
+
+    with page.expect_download(timeout=60000) as dl:
+        page.click("#export-gif")
+    gif = OUT / "export.gif"
+    dl.value.save_as(str(gif))
+    img = Image.open(gif)
+    frames = img.n_frames
+    img.seek(0)
+    img.convert("RGB").save(OUT / "gif-first.png")
+    img.seek(frames - 1)
+    img.convert("RGB").save(OUT / "gif-last.png")
+    first, _ = rows_visible(OUT / "gif-first.png", 62, 1)
+    static = OUT / "static-1x.png"
+    shot = browser.new_page(viewport={"width": 560, "height": 635})
+    shot.goto((OUT / "portrait.static.svg").as_uri())
+    shot.wait_for_timeout(300)
+    shot.screenshot(path=str(static))
+    shot.close()
+    _, last_bad = rows_visible(OUT / "gif-last.png", 62, 1)
+    _, static_bad = rows_visible(static, 62, 1)
+    kb = gif.stat().st_size // 1024
+    ok = img.format == "GIF" and 20 <= frames <= 90 and first <= 2 and last_bad == static_bad
+    check("11b GIF export plays from blank to the finished portrait", ok,
+          f"{frames} frames, {kb} KB, first frame {first}/62 rows, last frame matches static: {last_bad == static_bad}")
+
+    # 떨어지는 글자는 animateTransform이라 굳히는 방식이 다르다: 중간 프레임에 초록 글자가 있어야 한다
+    page.select_option("#anim", "matrix")
+    page.wait_for_timeout(500)
+    with page.expect_download(timeout=90000) as dl:
+        page.click("#export-gif")
+    rain = OUT / "export-matrix.gif"
+    dl.value.save_as(str(rain))
+    def lower_lit(path: Path, frac: float) -> int:
+        """아직 드러나지 않은 아래쪽 영역(본문 70~95%)의 밝은 픽셀 수. 타이핑만 있으면 0이어야 한다."""
+        g = Image.open(path)
+        g.seek(int(g.n_frames * frac))
+        px = g.convert("RGB").load()
+        return sum(1 for y in range(int(37 + 555 * 0.7), int(37 + 555 * 0.95)) for x in range(20, 540) if max(px[x, y]) > 90)
+
+    typing_lit, rain_lit = lower_lit(gif, 0.35), lower_lit(rain, 0.35)
+    check("11c matrix GIF bakes the falling glyphs", typing_lit == 0 and rain_lit > 100,
+          f"lit pixels below the reveal line: typing {typing_lit}, matrix {rain_lit}")
+    ctx.close()
+
+
 def visibility(browser) -> None:
     for name, wait in (("portrait.static.svg", 300), ("portrait.svg", 5500)):
         png = OUT / f"{name}.png"
@@ -341,6 +399,7 @@ def main() -> None:
             image_input(browser)
             share_link(browser)
             anim_styles(browser)
+            export_images(browser)
             mobile(browser)
             github_lookup(browser)
             if os.environ.get("CHECK_GITHUB"):
